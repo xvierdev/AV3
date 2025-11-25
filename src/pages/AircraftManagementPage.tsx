@@ -1,20 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-// Componentes
 import { AddAircraftModal } from '../components/AddAircraftModal/AddAircraftModal';
-
-// Contexto
 import { useAuth } from '../context/useAuth';
-
-// Tipos
 import type { AircraftWithPermission, NewAircraftData } from '../types/AircraftTypes';
-
-// Utilitários (Mocks)
 import { getAircraftsForUser, addAircraft } from '../utils/mockAircrafts';
 import { getAllUsers } from '../utils/mockUsers';
-
-// Estilos
 import pageStyles from './AircraftManagementPage.module.css';
 
 // Mapeamento para as cores
@@ -26,49 +16,34 @@ const statusClassMap: { [key: string]: string } = {
     'Concluído / Entregue': pageStyles['status-Concluido'],
 };
 
-/**
- * Exibe a lista de aeronaves e permite que administradores criem novos projetos.
- */
 function AircraftManagementPage() {
-    // ========================================================================
-    // Hooks e Estados
-    // ========================================================================
-
     const { user, USER_LEVELS } = useAuth();
     const navigate = useNavigate();
 
     const [aircrafts, setAircrafts] = useState<AircraftWithPermission[]>([]);
+    const [engineers, setEngineers] = useState<any[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // ========================================================================
-    // Lógica de Dados e Permissões
-    // ========================================================================
-
-    // Carrega a lista de aeronaves para o usuário logado ao montar o componente.
     useEffect(() => {
-        if (user) {
-            setAircrafts(getAircraftsForUser(user));
-        }
-    }, [user]);
+        const loadData = async () => {
+            if (user) {
+                const aircraftsData = await getAircraftsForUser(user);
+                const usersData = await getAllUsers();
+                const engineersData = usersData.filter(u => u.level === USER_LEVELS.ENGINEER);
+                setAircrafts(aircraftsData);
+                setEngineers(engineersData);
+            }
+        };
+        loadData();
+    }, [user, USER_LEVELS.ENGINEER]);
 
-    // Memoriza a lista de engenheiros para passar ao modal de criação.
-    const engineers = useMemo(() => {
-        return getAllUsers().filter(u => u.level === USER_LEVELS.ENGINEER);
-    }, [USER_LEVELS.ENGINEER]);
-
-    // Flag de permissão para simplificar a renderização condicional no JSX.
     const isAdmin = user?.level === USER_LEVELS.ADMIN;
 
-    // ========================================================================
-    // Handlers (Funções de Ação)
-    // ========================================================================
-
-    // Adiciona uma nova aeronave à lista após submissão do modal.
-    const handleAddAircraft = (data: NewAircraftData) => {
+    const handleAddAircraft = async (data: NewAircraftData) => {
         if (!user) return;
 
         try {
-            const addedAircraft = addAircraft(data, user.id);
+            const addedAircraft = await addAircraft(data, user.id);
             const newAircraftWithPermissions = { ...addedAircraft, canEdit: true };
             setAircrafts(prevAircrafts => [...prevAircrafts, newAircraftWithPermissions]);
             alert(`Aeronave "${addedAircraft.model}" adicionada com sucesso!`);
@@ -78,22 +53,15 @@ function AircraftManagementPage() {
         }
     };
 
-    // Navega para a página de detalhes da aeronave clicada.
     const handleSelectAircraft = (id: string) => {
         navigate(`/aeronaves/${id}`);
     };
 
-    // Navega para a página de gerenciamento de funcionários.
     const handleManageUsers = () => {
         if (isAdmin) {
             navigate('/usuarios');
         }
     };
-
-
-    // ========================================================================
-    // Renderização
-    // ========================================================================
 
     if (!user) {
         return <div className={pageStyles.container}>Carregando informações...</div>;
@@ -105,7 +73,6 @@ function AircraftManagementPage() {
                 <h1>✈️ Aerocode - Gerenciamento de Aeronaves</h1>
                 <div className={pageStyles.userInfo}>
                     <span className={pageStyles.userName}>Usuário: {user.name}</span>
-                    {/* <button onClick={handleLogout} className={pageStyles.logoutButton}>Sair</button> */}
                 </div>
             </header>
 

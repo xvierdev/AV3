@@ -3,35 +3,16 @@ import type { Task } from '../types/TaskTypes';
 import type { Part } from '../types/PartTypes';
 import type { Test } from '../types/TestTypes';
 
-
-// ========================================================================
-// Funções Auxiliares de Formatação
-// ========================================================================
-
-/**
- * Cria um cabeçalho de seção formatado para o relatório.
- */
 const createSection = (title: string, content: string): string => {
     const separator = '='.repeat(60);
     return `\n${separator}\n${title.toUpperCase()}\n${separator}\n${content}`;
 };
-
-// ========================================================================
-// Função Principal
-// ========================================================================
-
-/**
- * Compila e formata os dados de uma aeronave e seus componentes
- * (tarefas, peças, testes) em uma string de texto legível para download.
- */
 export const generateAircraftReport = (
     aircraft: Aircraft,
     tasks: Task[],
     parts: Part[],
     tests: Test[]
 ): string => {
-    // --- Geração de cada seção do relatório ---
-
     const mainInfo = [
         `ID do Projeto:    ${aircraft.id}`,
         `Modelo:           ${aircraft.model}`,
@@ -60,8 +41,6 @@ export const generateAircraftReport = (
             `  - [${test.result.padEnd(9)}] ${test.datePerformed}: Teste ${test.type}. ${test.notes ? `Notas: ${test.notes}` : ''}`
         ).join('\n')
         : 'Nenhum teste registrado.';
-
-    // --- Montagem do conteúdo final ---
 
     const reportContent = [
         createSection('Informações Gerais da Aeronave', mainInfo),

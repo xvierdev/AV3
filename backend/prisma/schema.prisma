@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  Int      @id @default(autoincrement())
+  name                String
+  username            String   @unique
+  password            String
+  level               String
+  levelName           String
+  associatedAircrafts String
+  createdAircrafts    Aircraft[] @relation("CreatedBy")
+  tasksCreated        Task[]     @relation("TasksCreated")
+}
+
+model Aircraft {
+  id                  String   @id @default(cuid())
+  model               String
+  type                String
+  capacity            Int
+  range               Int
+  clientName          String?
+  deliveryDeadline    String?
+  status              String
+  associatedEngineers String
+  createdBy           Int
+  creator             User      @relation("CreatedBy", fields: [createdBy], references: [id])
+  tasks               Task[]
+  parts               Part[]
+  tests               Test[]
+}
+
+model Task {
+  id                 Int      @id @default(autoincrement())
+  aircraftId         String
+  aircraft           Aircraft @relation(fields: [aircraftId], references: [id])
+  description        String
+  status             String
+  responsibleUserIds String
+  dueDate            String
+  creationDate       String
+  completionDate     String?
+  creatorId          Int
+  creator            User     @relation("TasksCreated", fields: [creatorId], references: [id])
+}
+
+model Part {
+  id         Int      @id @default(autoincrement())
+  aircraftId String
+  aircraft   Aircraft @relation(fields: [aircraftId], references: [id])
+  name       String
+  type       String
+  supplier   String
+  status     String
+}
+
+model Test {
+  id           Int     @id @default(autoincrement())
+  aircraftId   String
+  aircraft     Aircraft @relation(fields: [aircraftId], references: [id])
+  type         String
+  result       String
+  datePerformed String
+  notes        String?
+}

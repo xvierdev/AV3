@@ -1,77 +1,133 @@
-# ✈️ Aerocode - Sistema de Gestão da Produção de Aeronaves
+# ✈️ AV3 - Sistema de Gestão da Produção de Aeronaves
 
-![Badge de Status do Projeto: Em Desenvolvimento](https://img.shields.io/badge/Status-Em%20Desenvolvimento-orange)
-![Badge de Tecnologia Front-end: React](https://img.shields.io/badge/Front--end-React%20%7C%20Vite-blue)
-![Badge de Linguagem: TypeScript](https://img.shields.io/badge/Linguagem-TypeScript-blueviolet)
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-orange)
+![Front-end](https://img.shields.io/badge/front--end-React%20%2B%20Vite-blue)
+![Back-end](https://img.shields.io/badge/back--end-Node.js%20%2B%20Express-green)
+![Banco de Dados](https://img.shields.io/badge/database-MySQL%20%2B%20Prisma-blueviolet)
 
-## 📝 1. Visão Geral do Projeto
+Este repositório entrega a **AV3** descrita no documento `docs/AV3.pdf`: uma aplicação web crítica para orquestrar o ciclo de produção de aeronaves comerciais e militares, agora com GUI moderna em React, back-end Node.js/Express, Prisma ORM e MySQL.
 
-O **Aerocode** é um sistema corporativo crucial para o gerenciamento e acompanhamento de todas as fases da produção de aeronaves (comerciais e militares). O projeto tem como foco a migração da interface de linha de comando (CLI) legada para uma **Interface Gráfica do Usuário (GUI) moderna e intuitiva**, visando a escalabilidade e a redução drástica da curva de aprendizado para engenheiros e operadores.
+## 1. Visão Geral
 
-O sistema é construído como uma **Single Page Application (SPA)**, garantindo uma experiência de usuário fluida e responsiva, com a robustez e segurança fornecida pela tipagem estática do **TypeScript**.
+- **Objetivo**: substituir a CLI legada por uma SPA em TypeScript que mantenha todos os requisitos funcionais do sistema original (cadastro e gestão de usuários, aeronaves, tarefas, peças, testes e autenticação). 
+- **Criticidade**: o sistema precisa operar em ambientes regulados, com controle de acesso por nível (Administrador, Engenheiro, Operador) e garantia de disponibilidade.
+- **Documentos úteis**: [AV3.pdf](./docs/AV3.pdf) · [Wireframe de baixa fidelidade](./docs/wireframe%20de%20baixa%20fidelidade.pdf) · [Fluxo do usuário](./docs/diagrama%20de%20fluxo%20do%20usuário.pdf)
 
-### 🖼️ [wireframe de baixa fidelidade](./docs/wireframe%20de%20baixa%20fidelidade.pdf)
-### 🖥️ [wireframe de fluxo de usuário](./docs/diagrama%20de%20fluxo%20do%20usuário.pdf)
-### 📜 [relatório completo](./docs/AV2_RELATORIO.pdf)
+## 2. Arquitetura
 
-### 🎯 1.1. Objetivos Estratégicos
+| Camada | Tecnologias |
+| --- | --- |
+| Front-end | React 19, Vite 7, React Router 7, TypeScript 5, CSS Modules |
+| Back-end | Node.js 20+, Express 4, CORS, Prisma Client |
+| Banco de dados | MySQL 8 (relacional) com migrations/seed Prisma |
+| Autenticação | Context API + armazenamento local, níveis: administrador/engenheiro/operador |
 
-* **Usabilidade Aprimorada:** Substituir a interface CLI por uma GUI amigável, tornando o sistema acessível a um público técnico, mas com maior facilidade de uso.
-* **Gestão Completa do Ciclo de Vida:** Gerenciar todas as etapas críticas: Cadastro de Aeronaves, Suprimento de Peças, Etapas de Produção, Testes e Geração de Relatório Final.
-* **Integridade e Segurança:** Implementar um controle de acesso rigoroso para garantir que apenas usuários autorizados realizem operações críticas (CRUD) nas respectivas entidades.
+Principais diretórios:
 
-### 🛡️ 1.2. Níveis de Acesso e Permissões (Autenticação)
+```
+AV3/
+├── src/               # SPA em React
+├── backend/           # API Node/Express + Prisma + MySQL
+└── docs/              # Material de apoio (PDFs da AV3)
+```
 
-O Aerocode utiliza três níveis de permissão para controlar o acesso e as ações disponíveis:
+## 3. Pré-requisitos
 
-| Nível de Acesso | Responsabilidades Principais |
-| :--- | :--- |
-| **Administrador** | Gerenciamento completo de Funcionários (Cadastro, Edição, Exclusão, Nível de Acesso), além de todas as funções do Engenheiro. |
-| **Engenheiro** | Ampla permissividade. Gestão de Peças, Etapas e Testes (CRUD), Associação de Operadores a tarefas e Geração do Relatório Final de Produção. |
-| **Operador** | Visualização de Etapas e Peças a ele associadas. Permissão para alterar somente o status de peças relacionadas às suas tarefas. |
+| Ferramenta | Versão mínima | Notas |
+| --- | --- | --- |
+| Node.js | 20 LTS | Inclui npm 10 |
+| MySQL Server | 8.0 | Usuário com permissão de CREATE/ALTER no schema `av3` |
+| Sistemas suportados | Windows 10+, Ubuntu 24.04.3+ (ou derivados) | Conforme exigido em `AV3.pdf` |
 
----
+## 4. Configuração
 
-## 🛠️ 2. Tecnologias Utilizadas
-
-Este projeto é um protótipo navegável **somente front-end** para a fase inicial do desenvolvimento.
-
-* **Front-end:** React (com Hooks e Componentes Funcionais)
-* **Build Tool:** Vite
-* **Linguagem:** TypeScript
-* **Gerenciador de Pacotes:** npm
-* **Compatibilidade:** Windows 10+, Linux Ubuntu 24.04.03+ (e derivados)
-
----
-
-## 🚀 3. Manual de Execução (Guia de Instalação Local)
-
-Siga os passos abaixo para configurar e executar o projeto em seu ambiente de desenvolvimento.
-
-### 3.1. Pré-requisitos
-
-Certifique-se de que você possui o **Node.js** (versão LTS recomendada) e o **npm** (incluso no Node.js) instalados em seu sistema.
-
-### 3.2. Configuração Inicial
-
-1.  **Clone o Repositório:**
+1. **Clone**
     ```bash
-    git clone https://github.com/xvierdev/AV2
-    cd AV2
+    git clone https://github.com/xvierdev/AV3
+    cd AV3
     ```
 
-2.  **Instale as Dependências:**
-    Acesse a pasta raiz do projeto e instale todas as bibliotecas necessárias:
+2. **Instale as dependências da SPA**
     ```bash
     npm install
     ```
 
-### 3.3. Executando o Servidor de Desenvolvimento
+3. **Instale as dependências do back-end**
+    ```bash
+    cd backend
+    npm install
+    ```
 
+4. **Configure o banco** (ajuste os valores conforme seu ambiente):
+    ```env
+    # backend/.env
+    DATABASE_URL="mysql://USER:PASSWORD@localhost:3306/av3"
+    ```
 
+5. **Crie e popule o schema**
+    ```bash
+    cd backend
+    npx prisma migrate dev
+    npx prisma db seed
+    cd ..
+    ```
+
+> Dica: utilize `npm run prisma:migrate`, `npm run prisma:generate` e `npm run prisma:seed` na raiz para executar os comandos acima em série.
+
+## 5. Execução
+
+Na raiz do projeto:
 
 ```bash
+npm start
+```
+
+- Porta do back-end: `http://localhost:3001`
+- Porta do front-end (Vite): `http://localhost:5173`
+
+Execuções independentes:
+
+```bash
+# Backend apenas
+cd backend && npm run dev
+
+# Front-end apenas
 npm run dev
 ```
 
-O código de produção compilado estará disponível na pasta ./dist.
+## 6. Funcionalidades entregues
+
+- Autenticação com preservação no `localStorage` e bloqueios de rota via `ProtectedRoute`.
+- Gestão completa de usuários (CRUD + alteração de senha) respeitando restrições do Admin Master.
+- Cadastro e edição de aeronaves, tarefas, peças e testes com persistência no MySQL.
+- Associações muitas-para-muitas representadas por colunas JSON (`associatedEngineers`, `responsibleUserIds`).
+- Interface responsiva baseada nos wireframes fornecidos.
+
+## 7. Scripts úteis
+
+| Comando | Descrição |
+| --- | --- |
+| `npm start` | Sobe API e SPA em paralelo (concurrently). |
+| `npm run backend` / `npm run frontend` | Executa somente uma das camadas. |
+| `npm run prisma:migrate` | Roda `prisma migrate dev` no diretório `backend/`. |
+| `npm run prisma:generate` | Atualiza o Prisma Client. |
+| `npm run prisma:seed` | Reaplica o seed de dados padrão. |
+| `cd backend && npm run dev` | Alternativa direta para desenvolvimento do servidor. |
+
+## 8. Alinhamento com o documento AV3
+
+- ✅ **Tecnologias abertas e amplamente utilizadas**: React/TypeScript no front-end, Node.js + Prisma + MySQL no back-end, conforme recomendado.
+- ✅ **Compatibilidade Windows/Ubuntu**: stack baseada em Node e MySQL garante suporte multi-plataforma; já executado com sucesso no Windows 11.
+- ✅ **Persistência relacional**: migrations/seed Prisma estruturam todas as entidades exigidas (usuários, aeronaves, tarefas, peças, testes) com relacionamentos e campos JSON para arrays.
+- ✅ **Requisitos herdados da CLI**: os fluxos principais (cadastro/edição/consulta/remoção) foram reimplementados na GUI.
+- ⚠️ **Relatório de qualidade**: ainda não há automação para coletar e exibir as métricas de latência, tempo de resposta e tempo de processamento para 1, 5 e 10 usuários, conforme solicitado no PDF. Essa atividade permanece pendente.
+
+## 9. Próximos passos recomendados
+
+1. Implementar coleta de métricas (latência, tempo de resposta e processamento) diretamente no backend e armazenar resultados para gerar gráficos exigidos na AV3.
+2. Adicionar testes automatizados básicos (API e componentes) para reforçar a criticidade do sistema.
+3. Documentar o procedimento de implantação em servidores Ubuntu (systemd, PM2 ou Docker) e Windows (serviço NSSM), demonstrando aderência total ao requisito multi-plataforma.
+
+---
+
+> Em caso de dúvidas sobre instalação, execução ou aderência ao documento `AV3.pdf`, consulte este README ou abra uma issue descrevendo o contexto.

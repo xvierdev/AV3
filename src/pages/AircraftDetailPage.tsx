@@ -47,6 +47,7 @@ function AircraftDetailPage() {
     const [tasksList, setTasksList] = useState<Task[]>([]);
     const [partsList, setPartsList] = useState<Part[]>([]);
     const [testsList, setTestsList] = useState<Test[]>([]);
+    const [allUsers, setAllUsers] = useState<any[]>([]);
     const [error, setError] = useState<string | null>(null);
 
     // Estados de UI
@@ -67,7 +68,6 @@ function AircraftDetailPage() {
     // Dados Memorizados e Permissões
     // ========================================================================
 
-    const allUsers = useMemo(() => getAllUsers(), []);
     const engineers = useMemo(() => allUsers.filter(u => u.level === USER_LEVELS.ENGINEER), [allUsers, USER_LEVELS.ENGINEER]);
     const possibleAssignees = useMemo(() => allUsers.filter(u => u.level !== USER_LEVELS.ADMIN), [allUsers, USER_LEVELS.ADMIN]);
 
@@ -84,27 +84,41 @@ function AircraftDetailPage() {
     // ========================================================================
 
     useEffect(() => {
-        if (!id) { setError("ID da Aeronave não fornecido."); return; }
-        const foundAircraft = getAircraftById(id);
-        if (foundAircraft) {
-            setAircraft(foundAircraft);
-            setEditData(foundAircraft);
-            setTasksList(getTasksByAircraftId(id));
-            setPartsList(getPartsByAircraftId(id));
-            setTestsList(getTestsByAircraftId(id));
-        } else {
-            setError(`Aeronave com ID ${id} não encontrada.`);
-        }
+        const loadData = async () => {
+            if (!id) { setError("ID da Aeronave não fornecido."); return; }
+            try {
+                const [foundAircraft, tasks, parts, tests, users] = await Promise.all([
+                    getAircraftById(id),
+                    getTasksByAircraftId(id),
+                    getPartsByAircraftId(id),
+                    getTestsByAircraftId(id),
+                    getAllUsers()
+                ]);
+                if (foundAircraft) {
+                    setAircraft(foundAircraft);
+                    setEditData(foundAircraft);
+                    setTasksList(tasks);
+                    setPartsList(parts);
+                    setTestsList(tests);
+                    setAllUsers(users);
+                } else {
+                    setError(`Aeronave com ID ${id} não encontrada.`);
+                }
+            } catch (err) {
+                setError('Erro ao carregar dados.');
+            }
+        };
+        loadData();
     }, [id]);
 
     // ========================================================================
     // Handlers: Detalhes da Aeronave
     // ========================================================================
 
-    const handleSaveDetails = (e: FormEvent) => {
+    const handleSaveDetails = async (e: FormEvent) => {
         e.preventDefault();
         if (!id || !permissions.canEditDetails) return;
-        const updatedAircraft = updateAircraftDetails(id, editData);
+        const updatedAircraft = await updateAircraftDetails(id, editData);
         if (updatedAircraft) {
             setAircraft(updatedAircraft);
             setEditData(updatedAircraft);
@@ -121,10 +135,10 @@ function AircraftDetailPage() {
     // Handlers: Tarefas
     // ========================================================================
 
-    const handleCreateTask = (e: FormEvent) => {
+    const handleCreateTask = async (e: FormEvent) => {
         e.preventDefault();
-        if (!newTaskForm.description || !id) return;
-        const addedTask = createNewTask(id, newTaskForm.description, newTaskForm.responsibleUserIds, newTaskForm.dueDate);
+        if (!newTaskForm.description || !id || !user) return;
+        const addedTask = await createNewTask(id, newTaskForm.description, newTaskForm.responsibleUserIds, newTaskForm.dueDate, user.id);
         setTasksList(prev => [...prev, addedTask]);
         setIsTaskModalOpen(false);
         setNewTaskForm({ description: '', responsibleUserIds: [], dueDate: new Date().toISOString().split('T')[0] });
@@ -135,19 +149,20 @@ function AircraftDetailPage() {
         setIsEditTaskModalOpen(true);
     };
 
-    const handleUpdateTask = (taskId: number, data: Partial<Task>) => {
-        const updatedTask = updateTask(taskId, data);
+    const handleUpdateTask = async (taskId: number, data: Partial<Task>) => {
+        const updatedTask = await updateTask(taskId, data);
         if (updatedTask) setTasksList(prev => prev.map(t => (t.id === taskId ? updatedTask : t)));
         setIsEditTaskModalOpen(false);
     };
 
-    const handleDeleteTask = (taskId: number, taskDescription: string) => {
+    const handleDeleteTask = async (taskId: number, taskDescription: string) => {
         if (window.confirm(`Tem certeza que deseja excluir a tarefa "${taskDescription}"?`)) {
-            if (deleteTask(taskId)) setTasksList(prev => prev.filter(t => t.id !== taskId));
+            const success = await deleteTask(taskId);
+            if (success) setTasksList(prev => prev.filter(t => t.id !== taskId));
         }
     };
 
-    const handleUpdateTaskStatus = (task: Task) => {
+    const handleUpdateTaskStatus = async (task: Task) => {
         let newStatus: TaskStatus | null = null;
         switch (task.status) {
             case 'Pendente': newStatus = 'Em Andamento'; break;
@@ -158,7 +173,7 @@ function AircraftDetailPage() {
                 break;
         }
         if (newStatus) {
-            const updatedTask = updateTaskStatus(task.id, newStatus);
+            const updatedTask = await updateTaskStatus(task.id, newStatus);
             if (updatedTask) setTasksList(prev => prev.map(t => (t.id === task.id ? updatedTask : t)));
         }
     };
@@ -167,9 +182,10 @@ function AircraftDetailPage() {
     // Handlers: Peças
     // ========================================================================
 
-    const handleAddPart = (partData: NewPartData) => {
+    const handleAddPart = async (partData: NewPartData) => {
         if (!id) return;
-        setPartsList(prev => [...prev, addPart(id, partData)]);
+        const addedPart = await addPart(id, partData);
+        setPartsList(prev => [...prev, addedPart]);
         setIsPartModalOpen(false);
     };
 
@@ -178,20 +194,21 @@ function AircraftDetailPage() {
         setIsEditPartModalOpen(true);
     };
 
-    const handleUpdatePart = (partId: number, data: Partial<Part>) => {
-        const updatedPart = updatePart(partId, data);
+    const handleUpdatePart = async (partId: number, data: Partial<Part>) => {
+        const updatedPart = await updatePart(partId, data);
         if (updatedPart) setPartsList(prev => prev.map(p => p.id === partId ? updatedPart : p));
         setIsEditPartModalOpen(false);
     };
 
-    const handleUpdatePartStatus = (partId: number, newStatus: PartStatus) => {
-        const updatedPart = updatePartMockStatus(partId, newStatus);
+    const handleUpdatePartStatus = async (partId: number, newStatus: PartStatus) => {
+        const updatedPart = await updatePartMockStatus(partId, newStatus);
         if (updatedPart) setPartsList(prev => prev.map(p => (p.id === partId ? updatedPart : p)));
     };
 
-    const handleDeletePart = (partId: number, partName: string) => {
+    const handleDeletePart = async (partId: number, partName: string) => {
         if (window.confirm(`Tem certeza que deseja excluir a peça "${partName}"?`)) {
-            if (deletePart(partId)) setPartsList(prev => prev.filter(p => p.id !== partId));
+            const success = await deletePart(partId);
+            if (success) setPartsList(prev => prev.filter(p => p.id !== partId));
         }
     };
 
@@ -199,9 +216,10 @@ function AircraftDetailPage() {
     // Handlers: Testes e Relatório
     // ========================================================================
 
-    const handleRecordTest = (testData: NewTestData) => {
+    const handleRecordTest = async (testData: NewTestData) => {
         if (!id) return;
-        setTestsList(prev => [...prev, recordNewTest(id, testData)]);
+        const addedTest = await recordNewTest(id, testData);
+        setTestsList(prev => [...prev, addedTest]);
         setIsTestModalOpen(false);
     };
 

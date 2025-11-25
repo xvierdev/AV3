@@ -1,39 +1,18 @@
 import { useState, type FormEvent } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-
-// Contexto
 import { useAuth } from '../context/useAuth';
-
-// Utilitários (Mocks)
 import { updatePassword } from '../utils/mockUsers';
-
-// Estilos
 import pageStyles from './ProfilePage.module.css';
 
-
-/**
- * Permite que o usuário logado visualize seus dados e altere sua senha.
- */
 function ProfilePage() {
-    // ========================================================================
-    // Hooks e Estados
-    // ========================================================================
-
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-
-    // Estados para o formulário de alteração de senha
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
-    // ========================================================================
-    // Handlers (Funções de Ação)
-    // ========================================================================
-
-    // Valida e submete o formulário de alteração de senha.
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError('');
@@ -49,31 +28,22 @@ function ProfilePage() {
         }
 
         try {
-            const wasUpdated = updatePassword(user!.id, oldPassword, newPassword);
+            const wasUpdated = await updatePassword(user!.id, oldPassword, newPassword);
             if (wasUpdated) {
                 setSuccess('Senha atualizada com sucesso! Você será desconectado por segurança.');
-
-                // Limpa os campos após o sucesso
                 setOldPassword('');
                 setNewPassword('');
                 setConfirmPassword('');
-
-                // Desconecta o usuário após 3 segundos para que ele possa ler a mensagem
                 setTimeout(() => {
                     logout();
                     navigate('/login');
                 }, 3000);
             }
         } catch (err) {
-            // Captura o erro da lógica de mock para exibir uma mensagem específica
             const errorMessage = (err instanceof Error) ? err.message : 'Erro ao atualizar a senha.';
             setError(errorMessage);
         }
     };
-
-    // ========================================================================
-    // Renderização
-    // ========================================================================
 
     if (!user) {
         return <Navigate to="/login" replace />;

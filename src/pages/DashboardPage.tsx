@@ -1,10 +1,12 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 import { getAllAircrafts } from '../utils/mockAircrafts';
 import { getAllUsers } from '../utils/mockUsers';
 import { getAllTasks } from '../utils/mockTasks';
-import type { AircraftStatus } from '../types/AircraftTypes';
+import type { AircraftStatus, Aircraft } from '../types/AircraftTypes';
+import type { User } from '../types/UserTypes';
+import type { Task } from '../types/TaskTypes';
 import pageStyles from './DashboardPage.module.css';
 
 // -----------------------------------------------------------
@@ -30,14 +32,28 @@ function DashboardPage() {
     const navigate = useNavigate();
     const { user, USER_LEVELS } = useAuth();
 
+    const [allUsers, setAllUsers] = useState<User[]>([]);
+    const [allAircrafts, setAllAircrafts] = useState<Aircraft[]>([]);
+    const [allTasks, setAllTasks] = useState<Task[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadData = async () => {
+            const users = await getAllUsers();
+            const aircrafts = await getAllAircrafts();
+            const tasks = await getAllTasks();
+            setAllUsers(users);
+            setAllAircrafts(aircrafts);
+            setAllTasks(tasks);
+            setLoading(false);
+        };
+        loadData();
+    }, []);
+
     // --- Hooks de Estado (Apenas useMemo, sem useState/useEffect para simplicidade) ---
 
     // Função para calcular todas as estatísticas (otimizada com useMemo)
     const stats: DashboardStats = useMemo(() => {
-        const allAircrafts = getAllAircrafts();
-        const allTasks = getAllTasks();
-        const allUsers = getAllUsers();
-
         // 1. Estatísticas de Aeronaves
         const aircraftsByStatus = allAircrafts.reduce((acc, aircraft) => {
             const status = aircraft.status;
@@ -66,14 +82,14 @@ function DashboardPage() {
             tasksCompleted,
             usersByRole,
         };
-    }, []);
+    }, [allUsers, allAircrafts, allTasks]);
 
     // -----------------------------------------------------------
     // 3. Lógica de Permissão e Retorno Condicional
     // -----------------------------------------------------------
 
     // ⛔ Verificação de Nulidade (Regra dos Hooks: sempre depois de todos os Hooks)
-    if (!user) {
+    if (!user || loading) {
         return <div className={pageStyles.container} style={{ textAlign: 'center' }}>Acesso negado ou carregando...</div>;
     }
 
@@ -109,7 +125,6 @@ function DashboardPage() {
                     <button onClick={() => navigate('/aeronaves')} className={pageStyles.actionButton} style={{ backgroundColor: '#6c757d', color: 'white' }}>
                         Ver Aeronaves
                     </button>
-                    {/* <button onClick={() => logout()} className={pageStyles.logoutButton}>Sair</button> */}
                 </div>
             </header>
 
@@ -120,7 +135,9 @@ function DashboardPage() {
                 <div className={pageStyles.statCard} style={{ borderLeftColor: '#007bff' }}>
                     <h3>Total de Aeronaves</h3>
                     <div className={pageStyles.statValue}>{stats.totalAircrafts}</div>
-                    <div className={pageStyles.statDetail}>Em produção: {stats.aircraftsByStatus['Em Produção (Fase 1/6)'] + stats.aircraftsByStatus['Em Produção (Fase 3/6)'] || 0}</div>
+                    <div className={pageStyles.statDetail}>
+                        Em produção: {(stats.aircraftsByStatus['Em Produção (Fase 1/6)'] || 0) + (stats.aircraftsByStatus['Em Produção (Fase 3/6)'] || 0)}
+                    </div>
                 </div>
 
                 {/* Cartão 2: Tarefas Pendentes */}
@@ -157,7 +174,7 @@ function DashboardPage() {
                     </tr>
                 </thead>
                 <tbody>
-                    {getAllUsers().map(userItem => (
+                    {allUsers.map(userItem => (
                         <tr key={userItem.id}>
                             <td>{userItem.id}</td>
                             <td>{userItem.name}</td>

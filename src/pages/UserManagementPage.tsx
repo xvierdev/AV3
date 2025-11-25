@@ -17,6 +17,8 @@ import pageStyles from './UserManagementPage.module.css';
 /**
  * Permite que administradores gerenciem (criem, editem, deletem) os usuários do sistema.
  */
+const ADMIN_MASTER_USERNAME = 'admin';
+
 function UserManagementPage() {
     // ========================================================================
     // Hooks e Estados
@@ -46,11 +48,15 @@ function UserManagementPage() {
 
     // Carrega a lista de usuários ou redireciona se o acesso for indevido.
     useEffect(() => {
-        if (isAdmin) {
-            setUsersList(getAllUsers());
-        } else {
-            navigate('/aeronaves', { replace: true });
-        }
+        const loadUsers = async () => {
+            if (isAdmin) {
+                const users = await getAllUsers();
+                setUsersList(users);
+            } else {
+                navigate('/aeronaves', { replace: true });
+            }
+        };
+        loadUsers();
     }, [isAdmin, navigate]);
 
     // ========================================================================
@@ -58,14 +64,14 @@ function UserManagementPage() {
     // ========================================================================
 
     // Cria um novo usuário após a submissão do modal de criação.
-    const handleCreateUser = (e: FormEvent<HTMLFormElement>) => {
+    const handleCreateUser = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!newUserForm.name || !newUserForm.username) {
             alert('Preencha todos os campos obrigatórios.');
             return;
         }
         try {
-            const addedUser = createNewUser(newUserForm.name, newUserForm.username, newUserForm.level);
+            const addedUser = await createNewUser(newUserForm.name, newUserForm.username, newUserForm.level);
             setUsersList(prevUsers => [...prevUsers, addedUser]);
             setIsCreateModalOpen(false);
             alert(`Usuário ${addedUser.name} criado com sucesso! Senha Padrão: 123.`);
@@ -76,11 +82,11 @@ function UserManagementPage() {
     };
 
     // Atualiza um usuário existente após a submissão do modal de edição.
-    const handleUpdateUser = (e: FormEvent<HTMLFormElement>) => {
+    const handleUpdateUser = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!editingUser) return;
 
-        const updatedUser = updateUser(editingUser.id, { name: editingUser.name, level: editingUser.level });
+        const updatedUser = await updateUser(editingUser.id, { name: editingUser.name, level: editingUser.level });
         if (updatedUser) {
             setUsersList(prev => prev.map(u => (u.id === updatedUser.id ? updatedUser : u)));
             setIsEditModalOpen(false);
@@ -92,14 +98,14 @@ function UserManagementPage() {
     };
 
     // Deleta um usuário após solicitar confirmação.
-    const handleDeleteUser = (userId: number, userName: string) => {
+    const handleDeleteUser = async (userId: number, userName: string) => {
         if (user?.id === userId) {
             alert('Ação não permitida: Você não pode excluir sua própria conta.');
             return;
         }
         const isConfirmed = window.confirm(`Você tem certeza que deseja excluir o usuário "${userName}"?`);
         if (isConfirmed) {
-            const success = deleteUser(userId);
+            const success = await deleteUser(userId);
             if (success) {
                 setUsersList(prev => prev.filter(u => u.id !== userId));
                 alert('Usuário excluído com sucesso.');
@@ -125,6 +131,9 @@ function UserManagementPage() {
     const handleEditFormChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         if (editingUser) {
+            if (name === 'level' && editingUser.username === ADMIN_MASTER_USERNAME) {
+                return;
+            }
             setEditingUser({ ...editingUser, [name]: value });
         }
     };
@@ -186,10 +195,16 @@ function UserManagementPage() {
                                 <td className={pageStyles.td}>{u.associatedAircrafts.join(', ') || 'N/A'}</td>
                                 <td className={pageStyles.td}>
                                     <div className={pageStyles.actionsCell}>
-                                        <button onClick={() => handleOpenEditModal(u)} className={pageStyles.editButton}>Editar</button>
-                                        <button onClick={() => handleDeleteUser(u.id, u.name)} className={pageStyles.deleteButton} disabled={user?.id === u.id}>
-                                            Excluir
-                                        </button>
+                                        {u.username !== ADMIN_MASTER_USERNAME ? (
+                                            <>
+                                                <button onClick={() => handleOpenEditModal(u)} className={pageStyles.editButton}>Editar</button>
+                                                <button onClick={() => handleDeleteUser(u.id, u.name)} className={pageStyles.deleteButton} disabled={user?.id === u.id}>
+                                                    Excluir
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <span className={pageStyles.modalHint}>Admin Master gerenciado apenas por senha.</span>
+                                        )}
                                     </div>
                                 </td>
                             </tr>
@@ -223,9 +238,21 @@ function UserManagementPage() {
                         <label>Nome Completo:</label>
                         <input name="name" required value={editingUser.name} onChange={handleEditFormChange} className={pageStyles.modalInput} />
                         <label>Nível de Acesso:</label>
-                        <select name="level" required value={editingUser.level} onChange={handleEditFormChange} className={pageStyles.modalInput}>
+                        <select
+                            name="level"
+                            required
+                            value={editingUser.level}
+                            onChange={handleEditFormChange}
+                            className={pageStyles.modalInput}
+                            disabled={editingUser.username === ADMIN_MASTER_USERNAME}
+                        >
                             {allLevels.map(level => <option key={level} value={level}>{level.charAt(0).toUpperCase() + level.slice(1)}</option>)}
                         </select>
+                        {editingUser.username === ADMIN_MASTER_USERNAME && (
+                            <p className={pageStyles.modalHint}>
+                                O nível do Admin Master é fixo e não pode ser alterado.
+                            </p>
+                        )}
                         <p className={pageStyles.modalHint}>O nome de usuário (login) não pode ser alterado.</p>
                         <div className={pageStyles.modalActions}>
                             <button type="button" onClick={() => setIsEditModalOpen(false)} style={{ backgroundColor: '#6c757d', color: 'white' }}>Cancelar</button>
