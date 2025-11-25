@@ -1,9 +1,11 @@
 # ✈️ AV3 - Sistema de Gestão da Produção de Aeronaves
 
-![Status](https://img.shields.io/badge/status-em%20desenvolvimento-orange)
-![Front-end](https://img.shields.io/badge/front--end-React%20%2B%20Vite-blue)
-![Back-end](https://img.shields.io/badge/back--end-Node.js%20%2B%20Express-green)
-![Banco de Dados](https://img.shields.io/badge/database-MySQL%20%2B%20Prisma-blueviolet)
+<p>
+    <img src="https://img.shields.io/badge/status-em%20desenvolvimento-orange?logo=github&logoColor=white" alt="Status" />
+    <img src="https://img.shields.io/badge/front--end-React%20%2B%20Vite-0d8aff?logo=react&logoColor=white" alt="Front-end" />
+    <img src="https://img.shields.io/badge/back--end-Node.js%20%2B%20Express-97ca00?logo=node.js&logoColor=white" alt="Back-end" />
+    <img src="https://img.shields.io/badge/database-MySQL%20%2B%20Prisma-6f42c1?logo=mysql&logoColor=white" alt="Banco de Dados" />
+</p>
 
 Este repositório entrega a **AV3** descrita no documento `docs/AV3.pdf`: uma aplicação web crítica para orquestrar o ciclo de produção de aeronaves comerciais e militares, agora com GUI moderna em React, back-end Node.js/Express, Prisma ORM e MySQL.
 
