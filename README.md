@@ -99,7 +99,7 @@ av3/
     npm install
     ```
 
-4. **Configure o banco** (crie o arquivo `backend/.env` baseado no template `backend/.env.template` com as credenciais separadas para facilitar mudanças de host):
+4. **Configure o banco** (o arquivo `backend/.env` já vem com as configurações padrão para facilitar o uso local):
     ```env
     # backend/.env
     DB_HOST=localhost
@@ -112,7 +112,6 @@ av3/
     ```
 
     > O `DATABASE_URL` é composto dinamicamente no código a partir dessas variáveis, permitindo fácil alteração para acesso via IP (ex.: `DB_HOST=192.168.1.100`).
-    > **Nota**: O arquivo `backend/.env` não é versionado (está no `.gitignore`) para proteger credenciais. Use o `backend/.env.template` como base para criá-lo localmente.
 
 4.1 **Configure o front-end** (opcional, crie o arquivo `.env` baseado no template `.env.template` para customizar a URL da API):
     ```env
@@ -136,8 +135,10 @@ av3/
 Na raiz do projeto:
 
 ```bash
-npm start
+npm run dev
 ```
+
+> Este comando instala dependências do frontend, instala e configura o backend (incluindo banco de dados), e inicia a aplicação completa.
 
 - Porta do back-end: `http://localhost:3000` (ou conforme HOST configurado)
 - Porta do front-end (Vite): `http://localhost:5173`
@@ -156,6 +157,8 @@ cd backend && npm run dev
 # Front-end apenas
 npm run dev
 ```
+
+> Nota: `npm run dev` na raiz sobrescreve o comando padrão do Vite para fazer setup completo.
 
 ## 6. Funcionalidades entregues
 
