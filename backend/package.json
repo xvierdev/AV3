@@ -8,7 +8,8 @@
     "dev": "node server.js",
     "migrate": "npx prisma migrate dev",
     "generate": "npx prisma generate",
-    "seed": "npx prisma db seed"
+    "seed": "npx prisma db seed",
+    "setup": "npx prisma generate && npx prisma db push && npx prisma db seed"
   },
   "dependencies": {
     "@prisma/client": "^5.7.1",

@@ -1,4 +1,4 @@
-# ✈️ AV3 - Sistema de Gestão da Produção de Aeronaves
+# ✈️ AeroCode - Sistema de Gestão da Produção de Aeronaves
 
 <p>
     <img src="https://img.shields.io/badge/status-em%20desenvolvimento-orange?logo=github&logoColor=white" alt="Status" />
@@ -7,7 +7,7 @@
     <img src="https://img.shields.io/badge/database-MySQL%20%2B%20Prisma-6f42c1?logo=mysql&logoColor=white" alt="Banco de Dados" />
 </p>
 
-Este repositório entrega a **AV3** descrita no documento `docs/AV3.pdf`: uma aplicação web crítica para orquestrar o ciclo de produção de aeronaves comerciais e militares, agora com GUI moderna em React, back-end Node.js/Express, Prisma ORM e MySQL.
+Este repositório entrega a **AeroCode** descrita no documento `docs/AV3.pdf`: uma aplicação web crítica para orquestrar o ciclo de produção de aeronaves comerciais e militares, agora com GUI moderna em React, back-end Node.js/Express, Prisma ORM e MySQL.
 
 ## 1. Visão Geral
 
@@ -21,13 +21,13 @@ Este repositório entrega a **AV3** descrita no documento `docs/AV3.pdf`: uma ap
 | --- | --- |
 | Front-end | React 19, Vite 7, React Router 7, TypeScript 5, CSS Modules |
 | Back-end | Node.js 20+, Express 4, CORS, Prisma Client |
-| Banco de dados | MySQL 8 (relacional) com migrations/seed Prisma |
+| Banco de dados | MySQL 8 (relacional) com schema Prisma |
 | Autenticação | Context API + armazenamento local, níveis: administrador/engenheiro/operador |
 
 Principais diretórios:
 
 ```
-AV3/
+AeroCode/
 ├── src/               # SPA em React
 ├── backend/           # API Node/Express + Prisma + MySQL
 └── docs/              # Material de apoio (PDFs da AV3)
@@ -38,7 +38,7 @@ AV3/
 | Ferramenta | Versão mínima | Notas |
 | --- | --- | --- |
 | Node.js | 20 LTS | Inclui npm 10 |
-| MySQL Server | 8.0 | Usuário com permissão de CREATE/ALTER no schema `av3` |
+| MySQL Server | 8.0 | Usuário `aluno` com senha `fatec` e banco `aerocode` |
 | Sistemas suportados | Windows 10+, Ubuntu 24.04.3+ (ou derivados) | Conforme exigido em `AV3.pdf` |
 
 ## 4. Configuração
@@ -60,21 +60,21 @@ AV3/
     npm install
     ```
 
-4. **Configure o banco** (ajuste os valores conforme seu ambiente):
+4. **Configure o banco** (já configurado para usuário `aluno`, senha `fatec`, banco `aerocode`):
     ```env
     # backend/.env
-    DATABASE_URL="mysql://USER:PASSWORD@localhost:3306/av3"
+    DATABASE_URL="mysql://aluno:fatec@localhost:3306/aerocode"
+    PORT=3000
     ```
 
-5. **Crie e popule o schema**
+5. **Configure o banco e popule os dados**
     ```bash
     cd backend
-    npx prisma migrate dev
-    npx prisma db seed
+    npm run setup
     cd ..
     ```
 
-> Dica: utilize `npm run prisma:migrate`, `npm run prisma:generate` e `npm run prisma:seed` na raiz para executar os comandos acima em série.
+> O script `setup` gera o cliente Prisma, sincroniza o schema no banco e executa o seed de dados iniciais.
 
 ## 5. Execução
 
@@ -84,7 +84,7 @@ Na raiz do projeto:
 npm start
 ```
 
-- Porta do back-end: `http://localhost:3001`
+- Porta do back-end: `http://localhost:3000`
 - Porta do front-end (Vite): `http://localhost:5173`
 
 Execuções independentes:
@@ -111,16 +111,16 @@ npm run dev
 | --- | --- |
 | `npm start` | Sobe API e SPA em paralelo (concurrently). |
 | `npm run backend` / `npm run frontend` | Executa somente uma das camadas. |
-| `npm run prisma:migrate` | Roda `prisma migrate dev` no diretório `backend/`. |
-| `npm run prisma:generate` | Atualiza o Prisma Client. |
-| `npm run prisma:seed` | Reaplica o seed de dados padrão. |
+| `cd backend && npm run setup` | Configura e popula o banco de dados. |
+| `cd backend && npm run generate` | Atualiza o Prisma Client. |
+| `cd backend && npm run seed` | Reaplica o seed de dados padrão. |
 | `cd backend && npm run dev` | Alternativa direta para desenvolvimento do servidor. |
 
 ## 8. Alinhamento com o documento AV3
 
 - ✅ **Tecnologias abertas e amplamente utilizadas**: React/TypeScript no front-end, Node.js + Prisma + MySQL no back-end, conforme recomendado.
 - ✅ **Compatibilidade Windows/Ubuntu**: stack baseada em Node e MySQL garante suporte multi-plataforma; já executado com sucesso no Windows 11.
-- ✅ **Persistência relacional**: migrations/seed Prisma estruturam todas as entidades exigidas (usuários, aeronaves, tarefas, peças, testes) com relacionamentos e campos JSON para arrays.
+- ✅ **Persistência relacional**: schema Prisma estrutura todas as entidades exigidas (usuários, aeronaves, tarefas, peças, testes) com relacionamentos e campos JSON para arrays.
 - ✅ **Requisitos herdados da CLI**: os fluxos principais (cadastro/edição/consulta/remoção) foram reimplementados na GUI.
 - ⚠️ **Relatório de qualidade**: ainda não há automação para coletar e exibir as métricas de latência, tempo de resposta e tempo de processamento para 1, 5 e 10 usuários, conforme solicitado no PDF. Essa atividade permanece pendente.
 
