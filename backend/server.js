@@ -1,10 +1,12 @@
 const express = require('express');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
 const { PrismaClient, Prisma } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
+const saltRounds = 10;
 
 app.use(cors());
 app.use(express.json());
@@ -216,6 +218,23 @@ app.post('/api/login', async (req, res) => {
     }
     const { password: _, ...safeUser } = user;
     res.json(formatUser(safeUser));
+  } catch (error) {
+    handleServerError(res, error);
+  }
+});
+
+app.post('/api/verify-password', async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Usuário e senha são obrigatórios.' });
+  }
+  try {
+    const user = await prisma.user.findUnique({ where: { username } });
+    if (!user) {
+      return res.json({ valid: false });
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    res.json({ valid: isPasswordValid });
   } catch (error) {
     handleServerError(res, error);
   }

@@ -1,7 +1,7 @@
 import type { Aircraft, AircraftWithPermission, NewAircraftData } from '../types/AircraftTypes';
 import type { User } from '../types/UserTypes';
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 
 export const getAllAircrafts = async (): Promise<Aircraft[]> => {
     const res = await fetch(`${API_BASE}/aircrafts`);
@@ -48,4 +48,11 @@ export const updateAircraftDetails = async (id: string, updatedData: Partial<Air
     });
     if (res.ok) return res.json();
     return undefined;
+};
+
+export const deleteAircraft = async (id: string): Promise<boolean> => {
+    const res = await fetch(`${API_BASE}/aircrafts/${id}`, {
+        method: 'DELETE'
+    });
+    return res.ok;
 };

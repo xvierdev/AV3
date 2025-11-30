@@ -1,6 +1,6 @@
 import type { Part, PartStatus, NewPartData } from '../types/PartTypes';
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 
 export const getPartsByAircraftId = async (aircraftId: string): Promise<Part[]> => {
     const res = await fetch(`${API_BASE}/parts/aircraft/${aircraftId}`);

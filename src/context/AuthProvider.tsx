@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { AuthContext } from './AuthContext';
 import { type AuthContextType, type User, type UserLevel, ACCESS_HIERARCHY } from '../types/UserTypes';
-import { simulateLogin } from '../utils/mockUsers';
+import { login as apiLogin } from '../utils/apiUsers';
 
 interface AuthProviderProps {
     children: ReactNode;
@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const login = async (username: string, password: string): Promise<boolean> => {
         setLoading(true);
-        const loggedUser = await simulateLogin(username, password);
+        const loggedUser = await apiLogin(username, password);
         if (loggedUser) {
             setUser(loggedUser);
             localStorage.setItem('aerocodeUser', JSON.stringify(loggedUser));

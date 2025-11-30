@@ -1,13 +1,13 @@
 import { type User, type UserLevel, type UserWithoutPassword } from "../types/UserTypes";
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 
 export const getAllUsers = async (): Promise<UserWithoutPassword[]> => {
     const res = await fetch(`${API_BASE}/users`);
     return res.json();
 };
 
-export const simulateLogin = async (username: string, password: string): Promise<UserWithoutPassword | null> => {
+export const login = async (username: string, password: string): Promise<UserWithoutPassword | null> => {
     const res = await fetch(`${API_BASE}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -17,6 +17,19 @@ export const simulateLogin = async (username: string, password: string): Promise
         return res.json();
     }
     return null;
+};
+
+export const verifyPassword = async (username: string, password: string): Promise<boolean> => {
+    const res = await fetch(`${API_BASE}/verify-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
+    if (res.ok) {
+        const data = await res.json();
+        return data.valid;
+    }
+    return false;
 };
 
 export const createNewUser = async (name: string, username: string, level: UserLevel): Promise<UserWithoutPassword> => {

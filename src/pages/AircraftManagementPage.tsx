@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { AddAircraftModal } from '../components/AddAircraftModal/AddAircraftModal';
 import { useAuth } from '../context/useAuth';
 import type { AircraftWithPermission, NewAircraftData } from '../types/AircraftTypes';
-import { getAircraftsForUser, addAircraft } from '../utils/mockAircrafts';
-import { getAllUsers } from '../utils/mockUsers';
+import { getAircraftsForUser, addAircraft } from '../utils/apiAircrafts';
+import { getAllUsers } from '../utils/apiUsers';
 import pageStyles from './AircraftManagementPage.module.css';
 
 // Mapeamento para as cores

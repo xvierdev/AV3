@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
-import { updatePassword } from '../utils/mockUsers';
+import { updatePassword } from '../utils/apiUsers';
 import pageStyles from './ProfilePage.module.css';
 
 function ProfilePage() {

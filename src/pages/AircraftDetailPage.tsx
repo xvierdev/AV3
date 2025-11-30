@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 // ------------------- Componentes -------------------
 import { AddPartModal } from '../components/AddPartModal/AddPartModal';
-import { EditPartModal } from '../components/EditPartModal/EditPartModal'; // Importado
+import { EditPartModal } from '../components/EditPartModal/EditPartModal';
 import { EditTaskModal } from '../components/EditTaskModal/EditTaskModal';
 import { PartsList } from '../components/PartsList/PartsList';
 import { RecordTestModal } from '../components/RecordTestModal/RecordTestModal';
@@ -19,11 +19,11 @@ import type { Part, NewPartData, PartStatus } from '../types/PartTypes';
 import type { Test, NewTestData } from '../types/TestTypes';
 
 // ------------------- Lógica de Mock (Dados) -------------------
-import { getAircraftById, updateAircraftDetails } from '../utils/mockAircrafts';
-import { getAllUsers } from '../utils/mockUsers';
-import { getTasksByAircraftId, createNewTask, updateTaskStatus, updateTask, deleteTask } from '../utils/mockTasks';
-import { getPartsByAircraftId, addPart, updatePart, updatePartStatus as updatePartMockStatus, deletePart } from '../utils/mockParts';
-import { getTestsByAircraftId, recordNewTest } from '../utils/mockTests';
+import { getAircraftById, updateAircraftDetails, deleteAircraft } from '../utils/apiAircrafts';
+import { getAllUsers, verifyPassword } from '../utils/apiUsers';
+import { getTasksByAircraftId, createNewTask, updateTaskStatus, updateTask, deleteTask } from '../utils/apiTasks';
+import { getPartsByAircraftId, addPart, updatePart, updatePartStatus as updatePartMockStatus, deletePart } from '../utils/apiParts';
+import { getTestsByAircraftId, recordNewTest } from '../utils/apiTests';
 import { generateAircraftReport } from '../utils/reportGenerator';
 
 // ------------------- Estilos -------------------
@@ -60,6 +60,9 @@ function AircraftDetailPage() {
     const [isEditPartModalOpen, setIsEditPartModalOpen] = useState(false);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [editingPart, setEditingPart] = useState<Part | null>(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [deletePassword, setDeletePassword] = useState('');
+    const [deleteError, setDeleteError] = useState('');
     const [newTaskForm, setNewTaskForm] = useState<NewTaskData>({
         description: '', responsibleUserIds: [], dueDate: new Date().toISOString().split('T')[0],
     });
@@ -235,6 +238,21 @@ function AircraftDetailPage() {
         document.body.removeChild(link);
     };
 
+    const handleDeleteAircraft = async () => {
+        if (!user || !aircraft || !id) return;
+        const isValid = await verifyPassword(user.username, deletePassword);
+        if (!isValid) {
+            setDeleteError('Senha incorreta.');
+            return;
+        }
+        const success = await deleteAircraft(id);
+        if (success) {
+            navigate('/aeronaves');
+        } else {
+            setDeleteError('Erro ao excluir aeronave.');
+        }
+    };
+
     // ========================================================================
     // Funções Auxiliares de Renderização
     // ========================================================================
@@ -273,6 +291,7 @@ function AircraftDetailPage() {
                     <div>
                         <button onClick={handleGenerateReport} className={pageStyles.actionButton} style={{ backgroundColor: '#17a2b8', marginRight: '10px' }}>Gerar Relatório</button>
                         <button onClick={() => setIsEditing(true)} className={pageStyles.actionButton} style={{ backgroundColor: '#17a2b8', marginRight: '10px' }} disabled={isEditing}>Habilitar Edição</button>
+                        {permissions.isAdmin && <button onClick={() => setIsDeleteModalOpen(true)} className={pageStyles.actionButton} style={{ backgroundColor: '#dc3545', marginRight: '10px' }}>Excluir Aeronave</button>}
                     </div>
                 }
             </div>
@@ -366,6 +385,27 @@ function AircraftDetailPage() {
             <AddPartModal isOpen={isPartModalOpen} onClose={() => setIsPartModalOpen(false)} onSubmit={handleAddPart} />
             <RecordTestModal isOpen={isTestModalOpen} onClose={() => setIsTestModalOpen(false)} onSubmit={handleRecordTest} />
             <EditPartModal isOpen={isEditPartModalOpen} onClose={() => setIsEditPartModalOpen(false)} onSubmit={handleUpdatePart} part={editingPart} />
+
+            {isDeleteModalOpen &&
+                <div className={modalStyles.modalOverlay}>
+                    <div className={modalStyles.modalContent}>
+                        <h3>Excluir Aeronave</h3>
+                        <p>Esta ação é irreversível e excluirá todas as tarefas, peças e testes associados. Digite sua senha para confirmar:</p>
+                        <input
+                            type="password"
+                            value={deletePassword}
+                            onChange={(e) => setDeletePassword(e.target.value)}
+                            className={modalStyles.input}
+                            placeholder="Sua senha"
+                        />
+                        {deleteError && <p className={modalStyles.error}>{deleteError}</p>}
+                        <div className={modalStyles.modalActions}>
+                            <button type="button" onClick={() => { setIsDeleteModalOpen(false); setDeletePassword(''); setDeleteError(''); }}>Cancelar</button>
+                            <button type="button" onClick={handleDeleteAircraft} style={{ backgroundColor: '#dc3545' }}>Excluir</button>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     );
 }

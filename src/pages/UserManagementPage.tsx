@@ -8,7 +8,7 @@ import { useAuth } from '../context/useAuth';
 import type { UserLevel, UserWithoutPassword } from '../types/UserTypes';
 
 // Utilitários (Mocks)
-import { getAllUsers, createNewUser, updateUser, deleteUser } from '../utils/mockUsers';
+import { getAllUsers, createNewUser, updateUser, deleteUser } from '../utils/apiUsers';
 
 // Estilos
 import pageStyles from './UserManagementPage.module.css';

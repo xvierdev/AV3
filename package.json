@@ -11,6 +11,7 @@
     "backend": "node backend/server.js",
     "frontend": "vite",
     "start": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "stop": "pkill -f \"node backend/server.js\" && pkill -f \"vite\"",
     "prisma:migrate": "cd backend && prisma migrate dev && cd ..",
     "prisma:seed": "cd backend && node prisma/seed.js && cd ..",
     "prisma:generate": "cd backend && prisma generate && cd .."

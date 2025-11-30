@@ -42,7 +42,7 @@ model Aircraft {
 model Task {
   id                 Int      @id @default(autoincrement())
   aircraftId         String
-  aircraft           Aircraft @relation(fields: [aircraftId], references: [id])
+  aircraft           Aircraft @relation(fields: [aircraftId], references: [id], onDelete: Cascade)
   description        String
   status             String
   responsibleUserIds String
@@ -56,7 +56,7 @@ model Task {
 model Part {
   id         Int      @id @default(autoincrement())
   aircraftId String
-  aircraft   Aircraft @relation(fields: [aircraftId], references: [id])
+  aircraft   Aircraft @relation(fields: [aircraftId], references: [id], onDelete: Cascade)
   name       String
   type       String
   supplier   String
@@ -66,7 +66,7 @@ model Part {
 model Test {
   id           Int     @id @default(autoincrement())
   aircraftId   String
-  aircraft     Aircraft @relation(fields: [aircraftId], references: [id])
+  aircraft     Aircraft @relation(fields: [aircraftId], references: [id], onDelete: Cascade)
   type         String
   result       String
   datePerformed String

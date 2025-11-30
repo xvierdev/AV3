@@ -1,6 +1,6 @@
 import { type Task, type TaskStatus } from '../types/TaskTypes';
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 
 export const getAllTasks = async (): Promise<Task[]> => {
     const res = await fetch(`${API_BASE}/tasks`);
