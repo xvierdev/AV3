@@ -11,6 +11,24 @@ const saltRounds = 10;
 app.use(cors());
 app.use(express.json());
 
+// Middleware de Instrumentação (Medição do Tempo de Processamento)
+app.use((req, res, next) => {
+  // Início da medição com alta precisão (em nanosegundos)
+  const start = process.hrtime.bigint(); 
+
+  res.on('finish', () => {
+    const end = process.hrtime.bigint();
+    // Cálculo da duração em milissegundos
+    const durationNs = end - start;
+    const durationMs = Number(durationNs) / 1000000;
+    
+    // Anexa o Tempo de Processamento ao cabeçalho da resposta
+    // Sua ferramenta de Load Testing irá ler o 'X-Process-Time'
+    res.setHeader('X-Process-Time', durationMs.toFixed(3)); 
+  });
+  next();
+});
+
 const LEVEL_LABEL = {
   administrador: 'Administrador',
   engenheiro: 'Engenheiro',
