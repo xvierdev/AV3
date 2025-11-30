@@ -1,4 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 const prisma = new PrismaClient();
 
@@ -10,13 +12,16 @@ async function main() {
     return;
   }
 
+  const defaultPassword = '123';
+  const hashedPassword = await bcrypt.hash(defaultPassword, saltRounds);
+
   // Seed Users
   const users = [
     {
       id: 1,
       name: 'Admin Master',
       username: 'admin',
-      password: '123',
+      password: hashedPassword,
       level: 'administrador',
       levelName: 'Administrador',
       associatedAircrafts: JSON.stringify([])
@@ -25,7 +30,7 @@ async function main() {
       id: 2,
       name: 'Engenheiro Chefe',
       username: 'eng',
-      password: '123',
+      password: hashedPassword,
       level: 'engenheiro',
       levelName: 'Engenheiro',
       associatedAircrafts: JSON.stringify(['A-123', 'B-456'])
@@ -34,7 +39,7 @@ async function main() {
       id: 3,
       name: 'Operador de Montagem',
       username: 'op',
-      password: '123',
+      password: hashedPassword,
       level: 'operador',
       levelName: 'Operador',
       associatedAircrafts: JSON.stringify([])
@@ -43,7 +48,7 @@ async function main() {
       id: 4,
       name: 'Joana Silva',
       username: 'joana',
-      password: '123',
+      password: hashedPassword,
       level: 'engenheiro',
       levelName: 'Engenheiro',
       associatedAircrafts: JSON.stringify(['C-789'])
@@ -52,7 +57,7 @@ async function main() {
       id: 5,
       name: 'Carlos Mendes',
       username: 'carlos',
-      password: '123',
+      password: hashedPassword,
       level: 'engenheiro',
       levelName: 'Engenheiro',
       associatedAircrafts: JSON.stringify(['D-234', 'H-678'])
@@ -61,7 +66,7 @@ async function main() {
       id: 6,
       name: 'Ana Paula Santos',
       username: 'ana',
-      password: '123',
+      password: hashedPassword,
       level: 'operador',
       levelName: 'Operador',
       associatedAircrafts: JSON.stringify(['A-123'])
@@ -70,7 +75,7 @@ async function main() {
       id: 7,
       name: 'Roberto Lima',
       username: 'roberto',
-      password: '123',
+      password: hashedPassword,
       level: 'operador',
       levelName: 'Operador',
       associatedAircrafts: JSON.stringify(['B-456', 'G-345'])
@@ -79,7 +84,7 @@ async function main() {
       id: 8,
       name: 'Fernanda Costa',
       username: 'fernanda',
-      password: '123',
+      password: hashedPassword,
       level: 'engenheiro',
       levelName: 'Engenheiro',
       associatedAircrafts: JSON.stringify(['E-567', 'F-890'])
@@ -88,7 +93,7 @@ async function main() {
       id: 9,
       name: 'Marcos Oliveira',
       username: 'marcos',
-      password: '123',
+      password: hashedPassword,
       level: 'operador',
       levelName: 'Operador',
       associatedAircrafts: JSON.stringify(['C-789', 'D-234'])
