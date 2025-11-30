@@ -83,13 +83,20 @@ av3/
     npm install
     ```
 
-4. **Configure o banco** (crie ou verifique o arquivo `backend/.env` com as credenciais):
+4. **Configure o banco** (crie ou verifique o arquivo `backend/.env` com as credenciais separadas para facilitar mudanças de host):
     ```env
     # backend/.env
-    DATABASE_URL="mysql://aluno:fatec@localhost:3306/aerocode"
+    DB_HOST=localhost
+    DB_PORT=3306
+    DB_USER=aluno
+    DB_PASS=fatec
+    DB_NAME=aerocode
     HOST=localhost
     PORT=3000
     ```
+
+    > O `DATABASE_URL` é composto dinamicamente no código a partir dessas variáveis, permitindo fácil alteração para acesso via IP (ex.: `DB_HOST=192.168.1.100`).
+    > **Nota**: O arquivo `backend/.env` não é versionado (está no `.gitignore`) para proteger credenciais. Crie-o localmente com as configurações adequadas ao seu ambiente.
 
 5. **Configure o banco e popule os dados**
     ```bash
