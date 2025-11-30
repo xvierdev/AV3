@@ -2,6 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const { PrismaClient, Prisma } = require('@prisma/client');
+require('dotenv').config();
+
+const dbHost = process.env.DB_HOST || 'localhost';
+const dbPort = process.env.DB_PORT || '3306';
+const dbUser = process.env.DB_USER || 'aluno';
+const dbPass = process.env.DB_PASS || 'fatec';
+const dbName = process.env.DB_NAME || 'aerocode';
+process.env.DATABASE_URL = `mysql://${dbUser}:${dbPass}@${dbHost}:${dbPort}/${dbName}`;
 
 const prisma = new PrismaClient();
 const app = express();
