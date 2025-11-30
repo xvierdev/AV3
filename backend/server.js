@@ -99,11 +99,12 @@ app.post('/api/users', async (req, res) => {
   }
 
   try {
+    const hashedPassword = await bcrypt.hash('123', saltRounds);
     const user = await prisma.user.create({
       data: {
         name,
         username,
-        password: '123',
+        password: hashedPassword,
         level,
         levelName: LEVEL_LABEL[level] || LEVEL_LABEL.operador,
         associatedAircrafts: '[]',
@@ -160,12 +161,17 @@ app.put('/api/users/:id/password', async (req, res) => {
   }
   try {
     const user = await prisma.user.findUnique({ where: { id: Number(req.params.id) } });
-    if (!user || user.password !== oldPassword) {
+    if(!user) {
+      return res.status(400).json({ error: 'Usuário não encontrado.'});
+    }
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isPasswordValid) {
       return res.status(401).json({ error: 'Senha atual inválida.' });
     }
+    const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
     await prisma.user.update({
       where: { id: user.id },
-      data: { password: newPassword },
+      data: { password: hashedNewPassword },
     });
     res.json({ success: true });
   } catch (error) {
@@ -199,10 +205,13 @@ app.post('/api/login', async (req, res) => {
   if (!username || !password) {
     return res.status(400).json({ error: 'Usuário e senha são obrigatórios.' });
   }
-
   try {
     const user = await prisma.user.findUnique({ where: { username } });
-    if (!user || user.password !== password) {
+    if (!user) {
+      return res.status(401).json({ error: 'Credenciais inválidas.'});
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
       return res.status(401).json({ error: 'Credenciais inválidas.' });
     }
     const { password: _, ...safeUser } = user;
