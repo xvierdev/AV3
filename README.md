@@ -98,6 +98,14 @@ av3/
     > O `DATABASE_URL` é composto dinamicamente no código a partir dessas variáveis, permitindo fácil alteração para acesso via IP (ex.: `DB_HOST=192.168.1.100`).
     > **Nota**: O arquivo `backend/.env` não é versionado (está no `.gitignore`) para proteger credenciais. Use o `backend/.env.template` como base para criá-lo localmente.
 
+4.1 **Configure o front-end** (opcional, crie o arquivo `.env` baseado no template `.env.template` para customizar a URL da API):
+    ```env
+    # .env
+    VITE_API_BASE=http://localhost:3000/api
+    ```
+
+    > Por padrão, o front-end usa `http://localhost:3000/api` se não configurado. Use este arquivo para apontar para um backend remoto.
+
 5. **Configure o banco e popule os dados**
     ```bash
     cd backend
