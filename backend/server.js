@@ -6,6 +6,7 @@ const { PrismaClient, Prisma } = require('@prisma/client');
 const prisma = new PrismaClient();
 const app = express();
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || 'localhost';
 const saltRounds = 10;
 
 app.use(cors());
@@ -555,6 +556,6 @@ app.post('/api/tests', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`Server running on ${HOST}:${PORT}`);
 });

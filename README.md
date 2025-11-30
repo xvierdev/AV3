@@ -27,10 +27,33 @@ Este repositório entrega a **AeroCode** descrita no documento `docs/AV3.pdf`: u
 Principais diretórios:
 
 ```
-AeroCode/
-├── src/               # SPA em React
-├── backend/           # API Node/Express + Prisma + MySQL
-└── docs/              # Material de apoio (PDFs da AV3)
+av3/
+├── src/                    # SPA em React/TypeScript
+│   ├── components/         # Componentes reutilizáveis
+│   │   ├── ProtectedRoute.tsx
+│   │   ├── RootRedirect.tsx
+│   │   └── [modais e listas]/
+│   ├── context/            # Context API para autenticação
+│   ├── pages/              # Páginas da aplicação
+│   ├── styles/             # Estilos compartilhados
+│   ├── types/              # Definições TypeScript
+│   ├── utils/              # Utilitários e dados mock
+│   ├── App.tsx             # Componente raiz
+│   └── main.tsx            # Ponto de entrada
+├── backend/                # API Node.js/Express + Prisma
+│   ├── prisma/             # Schema, seeds e migrations
+│   │   ├── schema.prisma
+│   │   ├── seed.js
+│   │   └── migrations/
+│   ├── server.js           # Servidor Express
+│   └── package.json
+├── load-tests/             # Scripts de teste de carga K6
+│   └── aircrafts-test.js
+├── docs/                   # Documentação AV3
+├── package.json            # Dependências e scripts raiz
+├── vite.config.ts          # Configuração Vite
+├── tsconfig*.json          # Configurações TypeScript
+└── README.md               # Este arquivo
 ```
 
 ## 3. Pré-requisitos
@@ -45,8 +68,8 @@ AeroCode/
 
 1. **Clone**
     ```bash
-    git clone https://github.com/xvierdev/AV3
-    cd AV3
+    git clone https://github.com/xvierdev/av3
+    cd av3
     ```
 
 2. **Instale as dependências da SPA**
@@ -60,10 +83,11 @@ AeroCode/
     npm install
     ```
 
-4. **Configure o banco** (já configurado para usuário `aluno`, senha `fatec`, banco `aerocode`):
+4. **Configure o banco** (crie ou verifique o arquivo `backend/.env` com as credenciais):
     ```env
     # backend/.env
     DATABASE_URL="mysql://aluno:fatec@localhost:3306/aerocode"
+    HOST=localhost
     PORT=3000
     ```
 
@@ -84,7 +108,7 @@ Na raiz do projeto:
 npm start
 ```
 
-- Porta do back-end: `http://localhost:3000`
+- Porta do back-end: `http://localhost:3000` (ou conforme HOST configurado)
 - Porta do front-end (Vite): `http://localhost:5173`
 
 **Usuários de teste** (disponíveis na página de login):
@@ -144,15 +168,29 @@ A aplicação inclui instrumentação para coleta de métricas de desempenho con
 - **Cenário 3**: 10 VUs por 10 segundos (inicia após 22s).
 
 ### 9.3. Como Executar os Testes
-1. **Pré-requisito**: Instale o K6 (disponível em https://k6.io/docs/get-started/installation/).
+1. **Pré-requisito: Instale o K6**
+   - **No Linux (Ubuntu/Debian)**:
+     ```bash
+     sudo apt update
+     sudo apt install k6
+     ```
+     Ou via Snap: `sudo snap install k6`
+   - **No Windows**:
+     - Baixe o instalador MSI de https://k6.io/docs/get-started/installation/
+     - Execute o MSI e siga o assistente de instalação.
+     - Adicione o K6 ao PATH se necessário.
+   - Verifique a instalação: `k6 version`
+
 2. **Inicie o backend**:
    ```bash
    cd backend && npm run dev
    ```
+
 3. **Execute o teste** (na raiz do projeto):
    ```bash
    k6 run load-tests/aircrafts-test.js
    ```
+
 4. **Interprete os resultados**:
    - Procure `http_req_duration` (TR médio) e `tempo_de_processamento_ms` (TP médio) na saída.
    - Calcule L = TR - TP para cada cenário.
@@ -167,12 +205,6 @@ A aplicação inclui instrumentação para coleta de métricas de desempenho con
 - O middleware intercepta `res.send()` para medir TP com precisão até 6 casas decimais.
 - Testes rodam na rota `GET /api/aircrafts` (ideal para carga devido ao acesso ao banco).
 - Resultados são exibidos no terminal; salve em arquivo com `k6 run load-tests/aircrafts-test.js > resultados.txt` para análise posterior.
-
-## 11. Próximos passos recomendados
-
-1. ~~Implementar coleta de métricas (latência, tempo de resposta e processamento) diretamente no backend e armazenar resultados para gerar gráficos exigidos na AV3.~~ ✅ **Concluído**: Métricas implementadas via middleware e K6 (ver seção 9).
-2. Adicionar testes automatizados básicos (API e componentes) para reforçar a criticidade do sistema.
-3. Documentar o procedimento de implantação em servidores Ubuntu (systemd, PM2 ou Docker) e Windows (serviço NSSM), demonstrando aderência total ao requisito multi-plataforma.
 
 ---
 
