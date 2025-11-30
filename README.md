@@ -17,13 +17,13 @@ Este repositório entrega a **AeroCode** descrita no documento `docs/AV3.pdf`: u
 - [4. Configuração](#4-configuração)
 - [5. Execução](#5-execução)
 - [6. Funcionalidades entregues](#6-funcionalidades-entregues)
-- [7. Scripts úteis](#7-scripts-úteis)
-- [8. Alinhamento com o documento AV3](#8-alinhamento-com-o-documento-av3)
-- [9. Testes de Desempenho e Coleta de Métricas](#9-testes-de-desempenho-e-coleta-de-métricas)
-  - [9.1. Métricas Coletadas](#91-métricas-coletadas)
-  - [9.2. Cenários de Teste](#92-cenários-de-teste)
-  - [9.3. Como Executar os Testes](#93-como-executar-os-testes)
-  - [9.4. Notas Técnicas](#94-notas-técnicas)
+- [7. Alinhamento com o documento AV3](#7-alinhamento-com-o-documento-av3)
+- [8. Testes de Desempenho e Coleta de Métricas](#8-testes-de-desempenho-e-coleta-de-métricas)
+  - [8.1. Métricas Coletadas](#81-métricas-coletadas)
+  - [8.2. Cenários de Teste](#82-cenários-de-teste)
+  - [8.3. Como Executar os Testes](#83-como-executar-os-testes)
+  - [8.4. Notas Técnicas](#84-notas-técnicas)
+- [9. RELATÓRIO DOS TESTES](./docs/Testes.md)
 
 ## 1. Visão Geral
 
@@ -77,10 +77,36 @@ av3/
 | Ferramenta | Versão mínima | Notas |
 | --- | --- | --- |
 | Node.js | 20 LTS | Inclui npm 10 |
-| MySQL Server | 8.0 | Usuário `aluno` com senha `fatec` e banco `aerocode` |
+| MySQL Server ou MariaDB | 8.0 / 10.6+ | Usuário `aluno` com senha `fatec` e banco `aerocode` |
 | Sistemas suportados | Windows 10+, Ubuntu 24.04.3+ (ou derivados) | Conforme exigido em `AV3.pdf` |
 
-## 4. Configuração
+### 3.1. Configuração do MySQL ou MariaDB
+
+Antes de executar o projeto, crie o usuário e banco de dados no MySQL ou MariaDB:
+
+```sql
+-- Conecte-se ao MySQL como root ou administrador
+mysql -u root -p
+
+-- Crie o usuário 'aluno' com senha 'fatec'
+CREATE USER 'aluno'@'localhost' IDENTIFIED BY 'fatec';
+
+-- Crie o banco de dados 'aerocode'
+CREATE DATABASE aerocode;
+
+-- Conceda permissões ao usuário no banco
+GRANT ALL PRIVILEGES ON aerocode.* TO 'aluno'@'localhost';
+
+-- Atualize as permissões
+FLUSH PRIVILEGES;
+
+-- Saia do MySQL
+EXIT;
+```
+
+> **Nota**: Estes são os dados padrão usados no `.env`. Se alterar, atualize o arquivo `backend/.env` conforme necessário.
+
+## 4. Configuração Automática
 
 1. **Clone**
     ```bash
@@ -88,18 +114,15 @@ av3/
     cd av3
     ```
 
-2. **Instale as dependências da SPA**
+2. **Script de instalação automática**
     ```bash
-    npm install
+    npm run zero
     ```
 
-3. **Instale as dependências do back-end**
-    ```bash
-    cd backend
-    npm install
-    ```
+    > **Nota**: Certifique-se de que o Node.js 20+ está instalado. O projeto é compatível com MySQL ou MariaDB.
 
-4. **Configure o banco** (o arquivo `backend/.env` já vem com as configurações padrão para facilitar o uso local):
+
+4. **Configurações do banco** (o arquivo `backend/.env` já vem com as configurações padrão para facilitar o uso local):
     ```env
     # backend/.env
     DB_HOST=localhost
@@ -111,34 +134,19 @@ av3/
     PORT=3000
     ```
 
-    > O `DATABASE_URL` é composto dinamicamente no código a partir dessas variáveis, permitindo fácil alteração para acesso via IP (ex.: `DB_HOST=192.168.1.100`).
-
-4.1 **Configure o front-end** (opcional, crie o arquivo `.env` baseado no template `.env.template` para customizar a URL da API):
-    ```env
-    # .env
-    VITE_API_BASE=http://localhost:3000/api
-    ```
-
-    > Por padrão, o front-end usa `http://localhost:3000/api` se não configurado. Use este arquivo para apontar para um backend remoto.
-
-5. **Configure o banco e popule os dados**
-    ```bash
-    cd backend
-    npm run setup
-    cd ..
-    ```
-
-> O script `setup` gera o cliente Prisma, sincroniza o schema no banco e executa o seed de dados iniciais.
+    > (OPCIONAL) Para hospedar o sistema em servidor, crie um arquivo `.env` na raiz com: `VITE_API_BASE=http://ip_do_servidor:3000/api`
 
 ## 5. Execução
 
-Na raiz do projeto:
-
-```bash
-npm run dev
-```
-
-> Este comando instala dependências do frontend, instala e configura o backend (incluindo banco de dados), e inicia a aplicação completa.
+| Comando | Descrição |
+| --- | --- |
+| `npm run zero` | **Setup completo** (instala tudo e roda a aplicação). |
+| `npm start` | Sobe API e SPA em paralelo (concurrently). |
+| `npm run backend` / `npm run frontend` | Executa somente uma das camadas. |
+| `cd backend && npm run setup` | Configura e popula o banco de dados. |
+| `cd backend && npm run generate` | Atualiza o Prisma Client. |
+| `cd backend && npm run seed` | Reaplica o seed de dados padrão. |
+| `cd backend && npm run dev` | Alternativa direta para desenvolvimento do servidor. |
 
 - Porta do back-end: `http://localhost:3000` (ou conforme HOST configurado)
 - Porta do front-end (Vite): `http://localhost:5173`
@@ -148,18 +156,6 @@ npm run dev
 - Engenheiro: `eng` / `123`
 - Operador: `op` / `123`
 
-Execuções independentes:
-
-```bash
-# Backend apenas
-cd backend && npm run dev
-
-# Front-end apenas
-npm run dev
-```
-
-> Nota: `npm run dev` na raiz sobrescreve o comando padrão do Vite para fazer setup completo.
-
 ## 6. Funcionalidades entregues
 
 - Autenticação com preservação no `localStorage` e bloqueios de rota via `ProtectedRoute`.
@@ -168,18 +164,7 @@ npm run dev
 - Associações muitas-para-muitas representadas por colunas JSON (`associatedEngineers`, `responsibleUserIds`).
 - Interface responsiva baseada nos wireframes fornecidos.
 
-## 7. Scripts úteis
-
-| Comando | Descrição |
-| --- | --- |
-| `npm start` | Sobe API e SPA em paralelo (concurrently). |
-| `npm run backend` / `npm run frontend` | Executa somente uma das camadas. |
-| `cd backend && npm run setup` | Configura e popula o banco de dados. |
-| `cd backend && npm run generate` | Atualiza o Prisma Client. |
-| `cd backend && npm run seed` | Reaplica o seed de dados padrão. |
-| `cd backend && npm run dev` | Alternativa direta para desenvolvimento do servidor. |
-
-## 8. Alinhamento com o documento AV3
+## 7. Alinhamento com o documento AV3
 
 - ✅ **Tecnologias abertas e amplamente utilizadas**: React/TypeScript no front-end, Node.js + Prisma + MySQL no back-end, conforme recomendado.
 - ✅ **Compatibilidade Windows/Ubuntu**: stack baseada em Node e MySQL garante suporte multi-plataforma; já executado com sucesso no Windows 11.
@@ -187,23 +172,26 @@ npm run dev
 - ✅ **Requisitos herdados da CLI**: os fluxos principais (cadastro/edição/consulta/remoção) foram reimplementados na GUI.
 - ✅ **Relatório de qualidade**: implementado middleware no backend para medição automática de Tempo de Processamento (TP) via header `X-Process-Time`, e script K6 para coletar Tempo de Resposta (TR) e calcular Latência (L = TR - TP) em cenários de 1, 5 e 10 usuários simultâneos.
 
-## 9. Testes de Desempenho e Coleta de Métricas
+## 8. Testes de Desempenho e Coleta de Métricas
 
 > 📋 **Relatório detalhado**: Consulte o documento [`docs/Testes.md`](./docs/Testes.md) para um relatório completo dos testes de desempenho, incluindo resultados detalhados, gráficos e análises.
 
 A aplicação inclui instrumentação para coleta de métricas de desempenho conforme exigido na AV3:
 
-### 9.1. Métricas Coletadas
+### 8.1. Métricas Coletadas
 - **Tempo de Resposta (TR)**: Medido pelo K6 (tempo total da requisição HTTP).
 - **Tempo de Processamento (TP)**: Medido pelo backend via middleware, enviado no header `X-Process-Time`.
 - **Latência (L)**: Calculada como L = TR - TP (diferença entre resposta e processamento).
 
-### 9.2. Cenários de Teste
+### 8.2. Cenários de Teste
 - **Cenário 1**: 1 usuário virtual (VU) por 10 segundos.
 - **Cenário 2**: 5 VUs por 10 segundos (inicia após 11s).
 - **Cenário 3**: 10 VUs por 10 segundos (inicia após 22s).
 
-### 9.3. Como Executar os Testes
+![Comparação entre os 3 cenários de teste](./docs/graph.png)
+> **Gráfico**: Comparação visual entre os três cenários de teste de carga, mostrando Tempo de Resposta (TR), Tempo de Processamento (TP) e Latência (L) para cada um.
+
+### 8.3. Como Executar os Testes
 1. **Pré-requisito: Instale o K6**
    - **No Linux (Ubuntu/Debian)**:
      ```bash
@@ -242,7 +230,7 @@ A aplicação inclui instrumentação para coleta de métricas de desempenho con
      # Latência ≈ 105.3ms
      ```
 
-### 9.4. Notas Técnicas
+### 8.4. Notas Técnicas
 - O middleware intercepta `res.send()` para medir TP com precisão até 6 casas decimais.
 - Testes rodam na rota `GET /api/aircrafts` (ideal para carga devido ao acesso ao banco).
 - Resultados são exibidos no terminal; salve em arquivo com `k6 run load-tests/aircrafts-test.js > resultados.txt` para análise posterior.

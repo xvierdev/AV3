@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npm install && cd backend && npm install && npm run setup && cd .. && concurrently \"npm run backend\" \"npm run frontend\"",
+    "zero": "npm install && cd backend && npm install && npm run setup && cd .. && concurrently \"npm run backend\" \"npm run frontend\"",
+    "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
