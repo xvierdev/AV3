@@ -11,6 +11,7 @@ function LoginPage() {
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState('');
+    const [dbInfoExpanded, setDbInfoExpanded] = useState<boolean>(false);
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -72,6 +73,20 @@ function LoginPage() {
                 <p className={pageStyles.hint}>
                     Usuários de Teste: admin/123, eng/123, op/123
                 </p>
+
+                <div className={pageStyles.dbInfo}>
+                    <h4 onClick={() => setDbInfoExpanded(!dbInfoExpanded)} className={pageStyles.dbInfoToggle}>
+                        Configuração do Banco de Dados (MySQL/MariaDB) {dbInfoExpanded ? '▼' : '▶'}
+                    </h4>
+                    {dbInfoExpanded && (
+                        <div className={pageStyles.dbInfoContent}>
+                            <p><strong>Usuário:</strong> aluno</p>
+                            <p><strong>Senha:</strong> fatec</p>
+                            <p><strong>Banco:</strong> aerocode</p>
+                            <p><strong>Porta:</strong> 3306</p>
+                        </div>
+                    )}
+                </div>
             </form>
         </div>
     );

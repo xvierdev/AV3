@@ -63,3 +63,33 @@
     text-align: center;
     margin-top: 15px;
 }
+
+.dbInfo {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    font-size: 0.75em;
+    color: #495057;
+    text-align: left;
+}
+
+.dbInfoToggle {
+    margin: 0;
+    font-size: 0.9em;
+    color: #343a40;
+    cursor: pointer;
+    user-select: none;
+}
+
+.dbInfoToggle:hover {
+    color: #007bff;
+}
+
+.dbInfoContent {
+    margin-top: 8px;
+}
+
+.dbInfoContent p {
+    margin: 4px 0;
+}

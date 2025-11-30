@@ -11,7 +11,7 @@ const saltRounds = 10;
 app.use(cors());
 app.use(express.json());
 
-// Middleware de Instrumentação (Medição do Tempo de Processamento) - ROBUSTO
+// Middleware de Instrumentação (Medição do Tempo de Processamento)
 app.use((req, res, next) => {
   // Início da medição com alta precisão (em nanosegundos)
   const start = process.hrtime.bigint(); 

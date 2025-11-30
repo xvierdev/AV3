@@ -87,6 +87,11 @@ npm start
 - Porta do back-end: `http://localhost:3000`
 - Porta do front-end (Vite): `http://localhost:5173`
 
+**Usuários de teste** (disponíveis na página de login):
+- Administrador: `admin` / `123`
+- Engenheiro: `eng` / `123`
+- Operador: `op` / `123`
+
 Execuções independentes:
 
 ```bash
@@ -122,11 +127,50 @@ npm run dev
 - ✅ **Compatibilidade Windows/Ubuntu**: stack baseada em Node e MySQL garante suporte multi-plataforma; já executado com sucesso no Windows 11.
 - ✅ **Persistência relacional**: schema Prisma estrutura todas as entidades exigidas (usuários, aeronaves, tarefas, peças, testes) com relacionamentos e campos JSON para arrays.
 - ✅ **Requisitos herdados da CLI**: os fluxos principais (cadastro/edição/consulta/remoção) foram reimplementados na GUI.
-- ⚠️ **Relatório de qualidade**: ainda não há automação para coletar e exibir as métricas de latência, tempo de resposta e tempo de processamento para 1, 5 e 10 usuários, conforme solicitado no PDF. Essa atividade permanece pendente.
+- ✅ **Relatório de qualidade**: implementado middleware no backend para medição automática de Tempo de Processamento (TP) via header `X-Process-Time`, e script K6 para coletar Tempo de Resposta (TR) e calcular Latência (L = TR - TP) em cenários de 1, 5 e 10 usuários simultâneos.
 
-## 9. Próximos passos recomendados
+## 9. Testes de Desempenho e Coleta de Métricas
 
-1. Implementar coleta de métricas (latência, tempo de resposta e processamento) diretamente no backend e armazenar resultados para gerar gráficos exigidos na AV3.
+A aplicação inclui instrumentação para coleta de métricas de desempenho conforme exigido na AV3:
+
+### 9.1. Métricas Coletadas
+- **Tempo de Resposta (TR)**: Medido pelo K6 (tempo total da requisição HTTP).
+- **Tempo de Processamento (TP)**: Medido pelo backend via middleware, enviado no header `X-Process-Time`.
+- **Latência (L)**: Calculada como L = TR - TP (diferença entre resposta e processamento).
+
+### 9.2. Cenários de Teste
+- **Cenário 1**: 1 usuário virtual (VU) por 10 segundos.
+- **Cenário 2**: 5 VUs por 10 segundos (inicia após 11s).
+- **Cenário 3**: 10 VUs por 10 segundos (inicia após 22s).
+
+### 9.3. Como Executar os Testes
+1. **Pré-requisito**: Instale o K6 (disponível em https://k6.io/docs/get-started/installation/).
+2. **Inicie o backend**:
+   ```bash
+   cd backend && npm run dev
+   ```
+3. **Execute o teste** (na raiz do projeto):
+   ```bash
+   k6 run load-tests/aircrafts-test.js
+   ```
+4. **Interprete os resultados**:
+   - Procure `http_req_duration` (TR médio) e `tempo_de_processamento_ms` (TP médio) na saída.
+   - Calcule L = TR - TP para cada cenário.
+   - Exemplo de saída esperada:
+     ```
+     http_req_duration...........: avg=150.5ms
+     tempo_de_processamento_ms...: avg=45.2ms
+     # Latência ≈ 105.3ms
+     ```
+
+### 9.4. Notas Técnicas
+- O middleware intercepta `res.send()` para medir TP com precisão até 6 casas decimais.
+- Testes rodam na rota `GET /api/aircrafts` (ideal para carga devido ao acesso ao banco).
+- Resultados são exibidos no terminal; salve em arquivo com `k6 run load-tests/aircrafts-test.js > resultados.txt` para análise posterior.
+
+## 11. Próximos passos recomendados
+
+1. ~~Implementar coleta de métricas (latência, tempo de resposta e processamento) diretamente no backend e armazenar resultados para gerar gráficos exigidos na AV3.~~ ✅ **Concluído**: Métricas implementadas via middleware e K6 (ver seção 9).
 2. Adicionar testes automatizados básicos (API e componentes) para reforçar a criticidade do sistema.
 3. Documentar o procedimento de implantação em servidores Ubuntu (systemd, PM2 ou Docker) e Windows (serviço NSSM), demonstrando aderência total ao requisito multi-plataforma.
 
