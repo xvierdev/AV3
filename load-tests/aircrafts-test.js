@@ -8,7 +8,7 @@ import { Trend } from 'k6/metrics';
 const processingTime = new Trend('tempo_de_processamento_ms');
 
 // Endereço base da sua API (ajuste se necessário)
-const API_URL = 'http://localhost:3000/api/aircrafts';
+const API_URL = 'http://192.168.15.13:3000/api/aircrafts';
 
 // Duração ajustada para coleta de dados estável
 const SCENARIO_DURATION = '10s'; 

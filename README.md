@@ -243,7 +243,3 @@ A aplicação inclui instrumentação para coleta de métricas de desempenho con
 - O middleware intercepta `res.send()` para medir TP com precisão até 6 casas decimais.
 - Testes rodam na rota `GET /api/aircrafts` (ideal para carga devido ao acesso ao banco).
 - Resultados são exibidos no terminal; salve em arquivo com `k6 run load-tests/aircrafts-test.js > resultados.txt` para análise posterior.
-
----
-
-> Em caso de dúvidas sobre instalação, execução ou aderência ao documento `AV3.pdf`, consulte este README ou abra uma issue descrevendo o contexto.

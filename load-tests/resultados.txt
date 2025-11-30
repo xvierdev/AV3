@@ -1,0 +1,43 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: load-tests/aircrafts-test.js
+        output: json (resultados_av3_finais_remoto.json)
+
+     scenarios: (100.00%) 3 scenarios, 16 max VUs, 1m2s max duration (incl. graceful stop):
+              * scenario_1_user: 1 looping VUs for 10s (exec: testAircrafts, gracefulStop: 30s)
+              * scenario_5_users: 5 looping VUs for 10s (exec: testAircrafts, startTime: 11s, gracefulStop: 30s)
+              * scenario_10_users: 10 looping VUs for 10s (exec: testAircrafts, startTime: 22s, gracefulStop: 30s)
+
+
+     ✓ status is 200
+
+     checks.........................: 100.00% 160 out of 160
+     data_received..................: 301 kB  9.3 kB/s
+     data_sent......................: 16 kB   480 B/s
+     http_req_blocked...............: avg=353.2µs  min=4.28µs   med=8.35µs   max=6.58ms   p(90)=179.49µs p(95)=3.52ms  
+     http_req_connecting............: avg=284.38µs min=0s       med=0s       max=3.64ms   p(90)=156.52µs p(95)=2.82ms  
+   ✓ http_req_duration..............: avg=12.55ms  min=4.84ms   med=10.8ms   max=225.69ms p(90)=14.73ms  p(95)=19.25ms 
+       { expected_response:true }...: avg=12.55ms  min=4.84ms   med=10.8ms   max=225.69ms p(90)=14.73ms  p(95)=19.25ms 
+   ✓ http_req_failed................: 0.00%   0 out of 160
+     http_req_receiving.............: avg=114.32µs min=48.02µs  med=81.01µs  max=2.68ms   p(90)=118.85µs p(95)=148.49µs
+     http_req_sending...............: avg=29.97µs  min=11.28µs  med=21.8µs   max=142.3µs  p(90)=59.94µs  p(95)=94.37µs 
+     http_req_tls_handshaking.......: avg=0s       min=0s       med=0s       max=0s       p(90)=0s       p(95)=0s      
+     http_req_waiting...............: avg=12.41ms  min=4.77ms   med=10.64ms  max=225.6ms  p(90)=14.53ms  p(95)=19.05ms 
+     http_reqs......................: 160     4.949955/s
+     iteration_duration.............: avg=1.01s    min=1s       med=1.01s    max=1.22s    p(90)=1.01s    p(95)=1.02s   
+     iterations.....................: 160     4.949955/s
+   ✓ tempo_de_processamento_ms......: avg=4.862581 min=1.232679 med=4.409429 max=14.6385  p(90)=7.748248 p(95)=8.497724
+     vus............................: 10      min=0          max=10
+     vus_max........................: 16      min=16         max=16
+
+
+running (0m32.3s), 00/16 VUs, 160 complete and 0 interrupted iterations
+scenario_1_user   ✓ [======================================] 1 VUs   10s
+scenario_5_users  ✓ [======================================] 5 VUs   10s
+scenario_10_users ✓ [======================================] 10 VUs  10s
