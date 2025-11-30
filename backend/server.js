@@ -11,21 +11,30 @@ const saltRounds = 10;
 app.use(cors());
 app.use(express.json());
 
-// Middleware de Instrumentação (Medição do Tempo de Processamento)
+// Middleware de Instrumentação (Medição do Tempo de Processamento) - ROBUSTO
 app.use((req, res, next) => {
   // Início da medição com alta precisão (em nanosegundos)
   const start = process.hrtime.bigint(); 
 
-  res.on('finish', () => {
+  // 1. Armazena o método original de envio de resposta
+  const originalSend = res.send;
+
+  // 2. Sobrescreve res.send com nossa função de interceptação
+  res.send = function (body) {
+    // 3. O cronômetro para no momento em que a rota decide enviar a resposta
     const end = process.hrtime.bigint();
-    // Cálculo da duração em milissegundos
     const durationNs = end - start;
     const durationMs = Number(durationNs) / 1000000;
     
-    // Anexa o Tempo de Processamento ao cabeçalho da resposta
-    // Sua ferramenta de Load Testing irá ler o 'X-Process-Time'
-    res.setHeader('X-Process-Time', durationMs.toFixed(3)); 
-  });
+    // 4. Define o cabeçalho X-Process-Time ANTES de chamar o método original
+    // toFixed(6) para precisão máxima
+    res.setHeader('X-Process-Time', durationMs.toFixed(6)); 
+    
+    // 5. Chama o método original res.send() para enviar a resposta ao cliente
+    originalSend.call(this, body);
+  };
+
+  // Continua para a lógica da rota
   next();
 });
 
