@@ -83,7 +83,7 @@ av3/
     npm install
     ```
 
-4. **Configure o banco** (crie ou verifique o arquivo `backend/.env` com as credenciais separadas para facilitar mudanças de host):
+4. **Configure o banco** (crie o arquivo `backend/.env` baseado no template `backend/.env.template` com as credenciais separadas para facilitar mudanças de host):
     ```env
     # backend/.env
     DB_HOST=localhost
@@ -96,7 +96,7 @@ av3/
     ```
 
     > O `DATABASE_URL` é composto dinamicamente no código a partir dessas variáveis, permitindo fácil alteração para acesso via IP (ex.: `DB_HOST=192.168.1.100`).
-    > **Nota**: O arquivo `backend/.env` não é versionado (está no `.gitignore`) para proteger credenciais. Crie-o localmente com as configurações adequadas ao seu ambiente.
+    > **Nota**: O arquivo `backend/.env` não é versionado (está no `.gitignore`) para proteger credenciais. Use o `backend/.env.template` como base para criá-lo localmente.
 
 5. **Configure o banco e popule os dados**
     ```bash
