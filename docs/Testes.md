@@ -79,7 +79,11 @@ A tabela a seguir apresenta os valores médios (AVG) das métricas, revelando a 
 | **5 VUs** | $4.5$ | $14.0$ | $\mathbf{9.5}$ |
 | **10 VUs** | $5.0$ | $23.0$ | $\mathbf{18.0}$ |
 
-### 4.2. Visualização das Tendências
+### 4.2 Gráfico com os Resultados
+
+![gráfico dos testes](./graph.png)
+
+### 4.3. Visualização das Tendências
 
 Os gráficos demonstram claramente que, enquanto o TP se mantém estável, o TR e o L aumentam.
 
