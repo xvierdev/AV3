@@ -9,6 +9,22 @@
 
 Este repositório entrega a **AeroCode** descrita no documento `docs/AV3.pdf`: uma aplicação web crítica para orquestrar o ciclo de produção de aeronaves comerciais e militares, agora com GUI moderna em React, back-end Node.js/Express, Prisma ORM e MySQL.
 
+## Sumário
+
+- [1. Visão Geral](#1-visão-geral)
+- [2. Arquitetura](#2-arquitetura)
+- [3. Pré-requisitos](#3-pré-requisitos)
+- [4. Configuração](#4-configuração)
+- [5. Execução](#5-execução)
+- [6. Funcionalidades entregues](#6-funcionalidades-entregues)
+- [7. Scripts úteis](#7-scripts-úteis)
+- [8. Alinhamento com o documento AV3](#8-alinhamento-com-o-documento-av3)
+- [9. Testes de Desempenho e Coleta de Métricas](#9-testes-de-desempenho-e-coleta-de-métricas)
+  - [9.1. Métricas Coletadas](#91-métricas-coletadas)
+  - [9.2. Cenários de Teste](#92-cenários-de-teste)
+  - [9.3. Como Executar os Testes](#93-como-executar-os-testes)
+  - [9.4. Notas Técnicas](#94-notas-técnicas)
+
 ## 1. Visão Geral
 
 - **Objetivo**: substituir a CLI legada por uma SPA em TypeScript que mantenha todos os requisitos funcionais do sistema original (cadastro e gestão de usuários, aeronaves, tarefas, peças, testes e autenticação). 
@@ -170,6 +186,8 @@ npm run dev
 
 ## 9. Testes de Desempenho e Coleta de Métricas
 
+> 📋 **Relatório detalhado**: Consulte o documento [`docs/Testes.md`](./docs/Testes.md) para um relatório completo dos testes de desempenho, incluindo resultados detalhados, gráficos e análises.
+
 A aplicação inclui instrumentação para coleta de métricas de desempenho conforme exigido na AV3:
 
 ### 9.1. Métricas Coletadas
@@ -205,6 +223,11 @@ A aplicação inclui instrumentação para coleta de métricas de desempenho con
    ```bash
    k6 run load-tests/aircrafts-test.js
    ```
+
+   > Para salvar os resultados em JSON (como no arquivo `resultados_av3_finais_remoto.json`):
+   > ```bash
+   > k6 run load-tests/aircrafts-test.js --out json=resultados_av3_finais_remoto.json
+   > ```
 
 4. **Interprete os resultados**:
    - Procure `http_req_duration` (TR médio) e `tempo_de_processamento_ms` (TP médio) na saída.
