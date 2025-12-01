@@ -13,7 +13,7 @@ export type PartType = 'Nacional' | 'Importada';
  */
 export interface Part {
     id: number;
-    aircraftId: string;
+    aircraftId: number;
     name: string;
     type: PartType;
     supplier: string;

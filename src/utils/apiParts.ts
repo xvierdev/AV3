@@ -2,12 +2,12 @@ import type { Part, PartStatus, NewPartData } from '../types/PartTypes';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3000/api';
 
-export const getPartsByAircraftId = async (aircraftId: string): Promise<Part[]> => {
+export const getPartsByAircraftId = async (aircraftId: number): Promise<Part[]> => {
     const res = await fetch(`${API_BASE}/parts/aircraft/${aircraftId}`);
     return res.json();
 };
 
-export const addPart = async (aircraftId: string, partData: NewPartData): Promise<Part> => {
+export const addPart = async (aircraftId: number, partData: NewPartData): Promise<Part> => {
     const res = await fetch(`${API_BASE}/parts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

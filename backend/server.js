@@ -287,7 +287,7 @@ app.get('/api/aircrafts', async (req, res) => {
 
 app.get('/api/aircrafts/:id', async (req, res) => {
   try {
-    const aircraft = await prisma.aircraft.findUnique({ where: { id: req.params.id } });
+    const aircraft = await prisma.aircraft.findUnique({ where: { id: parseInt(req.params.id) } });
     if (!aircraft) {
       return res.status(404).json({ error: 'Aeronave não encontrada.' });
     }
@@ -361,7 +361,7 @@ app.put('/api/aircrafts/:id', async (req, res) => {
 
   try {
     const aircraft = await prisma.aircraft.update({
-      where: { id: req.params.id },
+      where: { id: parseInt(req.params.id) },
       data,
     });
     res.json(formatAircraft(aircraft));
@@ -375,7 +375,7 @@ app.put('/api/aircrafts/:id', async (req, res) => {
 
 app.delete('/api/aircrafts/:id', async (req, res) => {
   try {
-    await prisma.aircraft.delete({ where: { id: req.params.id } });
+    await prisma.aircraft.delete({ where: { id: parseInt(req.params.id) } });
     res.json({ success: true });
   } catch (error) {
     if (isNotFoundError(error)) {
@@ -398,7 +398,7 @@ app.get('/api/tasks', async (req, res) => {
 app.get('/api/tasks/aircraft/:aircraftId', async (req, res) => {
   try {
     const tasks = await prisma.task.findMany({
-      where: { aircraftId: req.params.aircraftId },
+      where: { aircraftId: parseInt(req.params.aircraftId) },
       orderBy: { id: 'asc' },
     });
     const response = await buildTaskResponses(tasks);
@@ -417,7 +417,7 @@ app.post('/api/tasks', async (req, res) => {
   try {
     const task = await prisma.task.create({
       data: {
-        aircraftId,
+        aircraftId: parseInt(aircraftId),
         description,
         status: 'Pendente',
         responsibleUserIds: serializeArrayField(responsibleUserIds),
@@ -476,7 +476,7 @@ app.delete('/api/tasks/:id', async (req, res) => {
 
 app.get('/api/parts/aircraft/:aircraftId', async (req, res) => {
   try {
-    const parts = await prisma.part.findMany({ where: { aircraftId: req.params.aircraftId } });
+    const parts = await prisma.part.findMany({ where: { aircraftId: parseInt(req.params.aircraftId) } });
     res.json(parts);
   } catch (error) {
     handleServerError(res, error);
@@ -491,7 +491,7 @@ app.post('/api/parts', async (req, res) => {
 
   try {
     const part = await prisma.part.create({
-      data: { aircraftId, name, supplier, type, status },
+      data: { aircraftId: parseInt(aircraftId), name, supplier, type, status },
     });
     res.json(part);
   } catch (error) {
@@ -535,7 +535,7 @@ app.delete('/api/parts/:id', async (req, res) => {
 
 app.get('/api/tests/aircraft/:aircraftId', async (req, res) => {
   try {
-    const tests = await prisma.test.findMany({ where: { aircraftId: req.params.aircraftId } });
+    const tests = await prisma.test.findMany({ where: { aircraftId: parseInt(req.params.aircraftId) } });
     res.json(tests);
   } catch (error) {
     handleServerError(res, error);
@@ -551,7 +551,7 @@ app.post('/api/tests', async (req, res) => {
   try {
     const test = await prisma.test.create({
       data: {
-        aircraftId,
+        aircraftId: parseInt(aircraftId),
         type,
         result,
         datePerformed: today(),

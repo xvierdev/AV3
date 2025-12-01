@@ -13,7 +13,7 @@ export type TestResult = 'Aprovado' | 'Reprovado';
  */
 export interface Test {
     id: number;
-    aircraftId: string;
+    aircraftId: number;
     type: TestType;
     result: TestResult;
     datePerformed: string;

@@ -7,12 +7,12 @@ export const getAllTasks = async (): Promise<Task[]> => {
     return res.json();
 };
 
-export const getTasksByAircraftId = async (aircraftId: string): Promise<Task[]> => {
+export const getTasksByAircraftId = async (aircraftId: number): Promise<Task[]> => {
     const res = await fetch(`${API_BASE}/tasks/aircraft/${aircraftId}`);
     return res.json();
 };
 
-export const createNewTask = async (aircraftId: string, description: string, responsibleUserIds: number[], dueDate: string, creatorId: number): Promise<Task> => {
+export const createNewTask = async (aircraftId: number, description: string, responsibleUserIds: number[], dueDate: string, creatorId: number): Promise<Task> => {
     const res = await fetch(`${API_BASE}/tasks`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

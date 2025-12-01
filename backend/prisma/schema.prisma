@@ -23,7 +23,7 @@ model User {
 }
 
 model Aircraft {
-  id                  String   @id @default(cuid())
+  id                  Int   @id @default(autoincrement())
   model               String
   type                String
   capacity            Int
@@ -41,7 +41,7 @@ model Aircraft {
 
 model Task {
   id                 Int      @id @default(autoincrement())
-  aircraftId         String
+  aircraftId         Int
   aircraft           Aircraft @relation(fields: [aircraftId], references: [id], onDelete: Cascade)
   description        String
   status             String
@@ -55,7 +55,7 @@ model Task {
 
 model Part {
   id         Int      @id @default(autoincrement())
-  aircraftId String
+  aircraftId Int
   aircraft   Aircraft @relation(fields: [aircraftId], references: [id], onDelete: Cascade)
   name       String
   type       String
@@ -65,7 +65,7 @@ model Part {
 
 model Test {
   id           Int     @id @default(autoincrement())
-  aircraftId   String
+  aircraftId   Int
   aircraft     Aircraft @relation(fields: [aircraftId], references: [id], onDelete: Cascade)
   type         String
   result       String

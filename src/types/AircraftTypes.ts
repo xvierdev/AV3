@@ -12,7 +12,7 @@ export type AircraftStatus =
  * Define a estrutura principal de dados para uma aeronave no sistema.
  */
 export interface Aircraft {
-    id: string;
+    id: number;
     model: string;
     type: string;
     capacity: number;

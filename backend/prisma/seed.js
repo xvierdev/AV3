@@ -33,7 +33,7 @@ async function main() {
       password: hashedPassword,
       level: 'engenheiro',
       levelName: 'Engenheiro',
-      associatedAircrafts: JSON.stringify(['A-123', 'B-456'])
+      associatedAircrafts: JSON.stringify([1, 2])
     },
     {
       id: 3,
@@ -51,7 +51,7 @@ async function main() {
       password: hashedPassword,
       level: 'engenheiro',
       levelName: 'Engenheiro',
-      associatedAircrafts: JSON.stringify(['C-789'])
+      associatedAircrafts: JSON.stringify([3])
     },
     {
       id: 5,
@@ -60,7 +60,7 @@ async function main() {
       password: hashedPassword,
       level: 'engenheiro',
       levelName: 'Engenheiro',
-      associatedAircrafts: JSON.stringify(['D-234', 'H-678'])
+      associatedAircrafts: JSON.stringify([4, 8])
     },
     {
       id: 6,
@@ -69,7 +69,7 @@ async function main() {
       password: hashedPassword,
       level: 'operador',
       levelName: 'Operador',
-      associatedAircrafts: JSON.stringify(['A-123'])
+      associatedAircrafts: JSON.stringify([1])
     },
     {
       id: 7,
@@ -78,7 +78,7 @@ async function main() {
       password: hashedPassword,
       level: 'operador',
       levelName: 'Operador',
-      associatedAircrafts: JSON.stringify(['B-456', 'G-345'])
+      associatedAircrafts: JSON.stringify([2, 7])
     },
     {
       id: 8,
@@ -87,7 +87,7 @@ async function main() {
       password: hashedPassword,
       level: 'engenheiro',
       levelName: 'Engenheiro',
-      associatedAircrafts: JSON.stringify(['E-567', 'F-890'])
+      associatedAircrafts: JSON.stringify([5, 6])
     },
     {
       id: 9,
@@ -96,7 +96,7 @@ async function main() {
       password: hashedPassword,
       level: 'operador',
       levelName: 'Operador',
-      associatedAircrafts: JSON.stringify(['C-789', 'D-234'])
+      associatedAircrafts: JSON.stringify([3, 4])
     }
   ];
 
@@ -107,7 +107,7 @@ async function main() {
   // Seed Aircrafts
   const aircrafts = [
     {
-      id: 'A-123',
+      id: 1,
       model: 'Airbus A320 Neo',
       type: 'Comercial',
       capacity: 180,
@@ -119,7 +119,7 @@ async function main() {
       createdBy: 1
     },
     {
-      id: 'B-456',
+      id: 2,
       model: 'F-35 Lightning II',
       type: 'Militar',
       capacity: 1,
@@ -131,7 +131,7 @@ async function main() {
       createdBy: 1
     },
     {
-      id: 'C-789',
+      id: 3,
       model: 'Embraer E-195 E2',
       type: 'Comercial',
       capacity: 146,
@@ -143,7 +143,7 @@ async function main() {
       createdBy: 1
     },
     {
-      id: 'D-234',
+      id: 4,
       model: 'Boeing 737 MAX 8',
       type: 'Comercial',
       capacity: 162,
@@ -155,7 +155,7 @@ async function main() {
       createdBy: 1
     },
     {
-      id: 'E-567',
+      id: 5,
       model: 'Cessna Citation X+',
       type: 'Executivo',
       capacity: 12,
@@ -167,7 +167,7 @@ async function main() {
       createdBy: 1
     },
     {
-      id: 'F-890',
+      id: 6,
       model: 'Bombardier Challenger 350',
       type: 'Executivo',
       capacity: 10,
@@ -179,7 +179,7 @@ async function main() {
       createdBy: 1
     },
     {
-      id: 'G-345',
+      id: 7,
       model: 'Embraer Phenom 300',
       type: 'Executivo',
       capacity: 8,
@@ -191,7 +191,7 @@ async function main() {
       createdBy: 1
     },
     {
-      id: 'H-678',
+      id: 8,
       model: 'Airbus A350-900',
       type: 'Comercial',
       capacity: 325,
@@ -211,7 +211,7 @@ async function main() {
   // Seed Tasks
   const tasks = [
     {
-      aircraftId: 'A-123',
+      aircraftId: 1,
       description: 'Verificação da fuselagem principal',
       status: 'Pendente',
       responsibleUserIds: [3],
@@ -221,7 +221,7 @@ async function main() {
       creatorId: 1,
     },
     {
-      aircraftId: 'A-123',
+      aircraftId: 1,
       description: 'Instalação do sistema elétrico',
       status: 'Em Andamento',
       responsibleUserIds: [2],
@@ -231,7 +231,7 @@ async function main() {
       creatorId: 1,
     },
     {
-      aircraftId: 'B-456',
+      aircraftId: 2,
       description: 'Inspeção de qualidade do trem de pouso',
       status: 'Concluída',
       responsibleUserIds: [1],
@@ -241,7 +241,7 @@ async function main() {
       creatorId: 1,
     },
     {
-      aircraftId: 'C-789',
+      aircraftId: 3,
       description: 'Montagem da cabine de comando',
       status: 'Pendente',
       responsibleUserIds: [5],
@@ -263,16 +263,16 @@ async function main() {
 
   // Seed Parts
   const parts = [
-    { id: 6, aircraftId: 'A-123', name: 'Painel de Controle Garmin', type: 'Importada', supplier: 'Garmin Aviation', status: 'Em Produção' },
-    { id: 7, aircraftId: 'B-456', name: 'Sistema de Armamento Lockheed', type: 'Importada', supplier: 'Lockheed Martin', status: 'Pronta para Uso' },
-    { id: 8, aircraftId: 'C-789', name: 'Motores IAE V2500', type: 'Importada', supplier: 'International Aero Engines', status: 'Em Transporte' },
-    { id: 9, aircraftId: 'D-234', name: 'Trem de Pouso Messier-Bugatti', type: 'Importada', supplier: 'Safran Landing Systems', status: 'Em Produção' },
-    { id: 10, aircraftId: 'E-567', name: 'Interior Premium Acme', type: 'Nacional', supplier: 'Acme Interiors Brasil', status: 'Pronta para Uso' },
-    { id: 11, aircraftId: 'F-890', name: 'Sistema Hidráulico Parker', type: 'Importada', supplier: 'Parker Aerospace', status: 'Em Transporte' },
-    { id: 12, aircraftId: 'G-345', name: 'Painéis Solares Embraer', type: 'Nacional', supplier: 'Embraer Energia', status: 'Pronta para Uso' },
-    { id: 13, aircraftId: 'H-678', name: 'Motores Rolls-Royce Trent XWB', type: 'Importada', supplier: 'Rolls-Royce', status: 'Em Produção' },
-    { id: 14, aircraftId: 'A-123', name: 'Asas Compósitas Hexcel', type: 'Importada', supplier: 'Hexcel Corporation', status: 'Pronta para Uso' },
-    { id: 15, aircraftId: 'B-456', name: 'Radar AESA Raytheon', type: 'Importada', supplier: 'Raytheon Technologies', status: 'Em Transporte' }
+    { id: 6, aircraftId: 1, name: 'Painel de Controle Garmin', type: 'Importada', supplier: 'Garmin Aviation', status: 'Em Produção' },
+    { id: 7, aircraftId: 2, name: 'Sistema de Armamento Lockheed', type: 'Importada', supplier: 'Lockheed Martin', status: 'Pronta para Uso' },
+    { id: 8, aircraftId: 3, name: 'Motores IAE V2500', type: 'Importada', supplier: 'International Aero Engines', status: 'Em Transporte' },
+    { id: 9, aircraftId: 4, name: 'Trem de Pouso Messier-Bugatti', type: 'Importada', supplier: 'Safran Landing Systems', status: 'Em Produção' },
+    { id: 10, aircraftId: 5, name: 'Interior Premium Acme', type: 'Nacional', supplier: 'Acme Interiors Brasil', status: 'Pronta para Uso' },
+    { id: 11, aircraftId: 6, name: 'Sistema Hidráulico Parker', type: 'Importada', supplier: 'Parker Aerospace', status: 'Em Transporte' },
+    { id: 12, aircraftId: 7, name: 'Painéis Solares Embraer', type: 'Nacional', supplier: 'Embraer Energia', status: 'Pronta para Uso' },
+    { id: 13, aircraftId: 8, name: 'Motores Rolls-Royce Trent XWB', type: 'Importada', supplier: 'Rolls-Royce', status: 'Em Produção' },
+    { id: 14, aircraftId: 1, name: 'Asas Compósitas Hexcel', type: 'Importada', supplier: 'Hexcel Corporation', status: 'Pronta para Uso' },
+    { id: 15, aircraftId: 2, name: 'Radar AESA Raytheon', type: 'Importada', supplier: 'Raytheon Technologies', status: 'Em Transporte' }
   ];
 
   for (const part of parts) {

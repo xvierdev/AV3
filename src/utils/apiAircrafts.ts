@@ -8,7 +8,7 @@ export const getAllAircrafts = async (): Promise<Aircraft[]> => {
     return res.json();
 };
 
-export const getAircraftById = async (id: string): Promise<Aircraft | undefined> => {
+export const getAircraftById = async (id: number): Promise<Aircraft | undefined> => {
     const res = await fetch(`${API_BASE}/aircrafts/${id}`);
     if (res.ok) return res.json();
     return undefined;
@@ -40,7 +40,7 @@ export const addAircraft = async (aircraftData: NewAircraftData, creatorId: numb
     return res.json();
 };
 
-export const updateAircraftDetails = async (id: string, updatedData: Partial<Aircraft>): Promise<Aircraft | undefined> => {
+export const updateAircraftDetails = async (id: number, updatedData: Partial<Aircraft>): Promise<Aircraft | undefined> => {
     const res = await fetch(`${API_BASE}/aircrafts/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
